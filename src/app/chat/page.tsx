@@ -47,7 +47,7 @@ export default function ChatPage() {
       setMessages([
         {
           id: "initial-greeting",
-          text: `Hello! I'm your AI partner for learning ${learningLangLabel}. You can chat with me in ${learningLangLabel}, ask for translations to ${spokenLangLabel}, or request grammar tips. How can I help you today?`,
+          text: `Hello! I'm your AI partner to help you learn ${learningLangLabel}. We'll chat mostly in ${spokenLangLabel}. Feel free to ask me for translations, grammar tips about ${learningLangLabel}, or try practicing ${learningLangLabel} with me. How can I assist you today?`,
           sender: "ai",
           timestamp: new Date(),
         },
@@ -94,7 +94,7 @@ export default function ChatPage() {
       });
        const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
-        text: "Sorry, I couldn't process your request. Please try again.", // Generic error in English
+        text: "Sorry, I couldn't process your request. Please try again.", 
         sender: "ai",
         timestamp: new Date(),
       };
@@ -106,6 +106,7 @@ export default function ChatPage() {
   };
   
   const learningLangLabel = getLanguageLabel(learningLanguage);
+  const spokenLangLabel = getLanguageLabel(spokenLanguage);
 
   return (
     <div className="flex flex-col h-[calc(100vh-8rem)]">
@@ -165,7 +166,7 @@ export default function ChatPage() {
             <Input
               ref={inputRef}
               type="text"
-              placeholder={`Type your message in ${learningLangLabel} or ask a question...`}
+              placeholder={`Chat in ${spokenLangLabel}, or ask about ${learningLangLabel}...`}
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               className="flex-1"

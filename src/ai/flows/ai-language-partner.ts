@@ -19,7 +19,7 @@ const AiLanguagePartnerInputSchema = z.object({
 export type AiLanguagePartnerInput = z.infer<typeof AiLanguagePartnerInputSchema>;
 
 const AiLanguagePartnerOutputSchema = z.object({
-  response: z.string().describe('The AI language partner response, primarily in the learning language, including grammar tips and translations if requested.'),
+  response: z.string().describe('The AI language partner response, primarily in the spoken language. It includes explanations for grammar/translations regarding the learning language.'),
 });
 export type AiLanguagePartnerOutput = z.infer<typeof AiLanguagePartnerOutputSchema>;
 
@@ -34,9 +34,21 @@ const prompt = ai.definePrompt({
   prompt: `You are an AI language partner.
 The user is learning {{{learningLanguage}}} and their main language is {{{spokenLanguage}}}.
 
-Converse with the user primarily in {{{learningLanguage}}}.
-If the user asks for a translation, translate between {{{learningLanguage}}} and {{{spokenLanguage}}}.
-If the user asks for grammar tips for {{{learningLanguage}}}, provide them. You can explain these tips in {{{spokenLanguage}}} if it aids clarity, but prioritize using {{{learningLanguage}}}.
+Your primary goal is to help the user learn {{{learningLanguage}}}.
+Converse with the user primarily in their **spoken language**: {{{spokenLanguage}}}.
+
+When the user asks for a translation of a word or phrase:
+- If they provide text in {{{learningLanguage}}}, translate it to {{{spokenLanguage}}}.
+- If they provide text in {{{spokenLanguage}}}, translate it to {{{learningLanguage}}}.
+Provide the translation directly, explained in {{{spokenLanguage}}}.
+
+When the user asks for grammar tips or explanations related to {{{learningLanguage}}}:
+- Provide clear and concise explanations in {{{spokenLanguage}}}.
+- You should use examples in {{{learningLanguage}}} to illustrate the grammar points.
+
+If the user sends a message in {{{learningLanguage}}} to practice:
+- You can offer corrections or brief feedback on their {{{learningLanguage}}} usage (explained in {{{spokenLanguage}}}).
+- Continue the main conversation flow in {{{spokenLanguage}}}.
 
 User message: {{{message}}}
 `,
