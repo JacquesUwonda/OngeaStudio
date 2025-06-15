@@ -1,8 +1,9 @@
+
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
-import { BookHeart } from "lucide-react";
+import { BookHeart, Languages } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { SidebarNav } from "./sidebar-nav";
 import {
@@ -13,9 +14,19 @@ import {
   SidebarFooter,
   SidebarTrigger
 } from "@/components/ui/sidebar";
-import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
+
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
+  const [selectedLanguage, setSelectedLanguage] = useState("fr");
+
   return (
     <div className="flex min-h-screen">
       <Sidebar collapsible="icon" side="left" variant="sidebar">
@@ -33,8 +44,29 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <SidebarContent className="flex-grow">
           <SidebarNav />
         </SidebarContent>
-        <SidebarFooter className="p-4 group-data-[collapsible=icon]:hidden">
-          <p className="text-xs text-muted-foreground">© 2024 Ongea</p>
+        <SidebarFooter className="p-4 space-y-4">
+          <div className="space-y-2 group-data-[collapsible=icon]:hidden">
+            <Label htmlFor="language-select" className="text-xs text-muted-foreground flex items-center">
+              <Languages className="h-4 w-4 mr-1.5" /> Learning Language
+            </Label>
+            <Select value={selectedLanguage} onValueChange={setSelectedLanguage}>
+              <SelectTrigger id="language-select" className="h-9 text-xs">
+                <SelectValue placeholder="Select language" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="fr">French</SelectItem>
+                <SelectItem value="es">Spanish</SelectItem>
+                <SelectItem value="de">German</SelectItem>
+                <SelectItem value="it">Italian</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <p className="text-xs text-muted-foreground group-data-[collapsible=icon]:hidden">
+            © 2025 Ongea by Jacques Uwonda
+          </p>
+           <div className="group-data-[collapsible=icon]:flex group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:w-full hidden">
+             <Languages className="h-5 w-5 text-muted-foreground" />
+           </div>
         </SidebarFooter>
       </Sidebar>
       <SidebarInset className="flex flex-col flex-1">
