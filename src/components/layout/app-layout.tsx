@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import Link from "next/link";
 import { BookHeart, Languages, MessageSquareText } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -22,24 +22,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { useLanguage, availableLanguages } from "@/contexts/language-context";
 
-const availableLanguages = [
-  { value: "en", label: "English" },
-  { value: "fr", label: "French" },
-  { value: "sw", label: "Swahili" },
-  { value: "lin", label: "Lingala" },
-  { value: "es", label: "Spanish" },
-  { value: "de", label: "German" },
-  { value: "it", label: "Italian" },
-  { value: "pt", label: "Portuguese" },
-  { value: "zh", label: "Mandarin Chinese" },
-  { value: "ja", label: "Japanese" },
-  { value: "ko", label: "Korean" },
-];
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
-  const [spokenLanguage, setSpokenLanguage] = useState("en");
-  const [learningLanguage, setLearningLanguage] = useState("fr");
+  const { spokenLanguage, setSpokenLanguage, learningLanguage, setLearningLanguage } = useLanguage();
 
   return (
     <div className="flex min-h-screen">

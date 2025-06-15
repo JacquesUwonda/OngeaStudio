@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -30,13 +31,15 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { Skeleton } from "@/components/ui/skeleton";
+import { useLanguage } from "@/contexts/language-context";
+import type { GenerateStoryInput } from "@/ai/flows/generate-story";
 
 const storyFormSchema = z.object({
   topic: z.string().min(3, "Topic must be at least 3 characters long."),
   length: z.enum(["short", "medium", "long"]),
 });
 
-type StoryFormValues = z.infer<typeof storyFormSchema>;
+type StoryFormValues = Pick<GenerateStoryInput, "topic" | "length">;
 
 interface GeneratedStory {
   title: string;
@@ -55,6 +58,7 @@ export default function StoriesPage() {
   const [sentences, setSentences] = useState<Sentence[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const { learningLanguage, spokenLanguage, getLanguageLabel } = useLanguage();
 
   const form = useForm<StoryFormValues>({
     resolver: zodResolver(storyFormSchema),
@@ -79,7 +83,12 @@ export default function StoriesPage() {
     setIsLoading(true);
     setStory(null);
     try {
-      const result = await generateStoryAction(data);
+      const fullInput: GenerateStoryInput = {
+        ...data,
+        learningLanguage: getLanguageLabel(learningLanguage), // Pass full language name
+        spokenLanguage: getLanguageLabel(spokenLanguage),   // Pass full language name
+      };
+      const result = await generateStoryAction(fullInput);
       setStory(result);
     } catch (error) {
       toast({
@@ -102,7 +111,7 @@ export default function StoriesPage() {
     const sentenceToTranslate = sentences.find(s => s.id === sentenceId);
     if (sentenceToTranslate) {
       try {
-        const translation = await translateSentenceAction(sentenceToTranslate.text);
+        const translation = await translateSentenceAction(sentenceToTranslate.text, getLanguageLabel(learningLanguage), getLanguageLabel(spokenLanguage));
         setSentences(prevSentences =>
           prevSentences.map(s =>
             s.id === sentenceId ? { ...s, translation, isTranslating: false } : s
@@ -130,10 +139,10 @@ export default function StoriesPage() {
         <CardHeader>
           <CardTitle className="font-headline text-2xl flex items-center text-primary">
             <BookText className="mr-2 h-7 w-7" />
-            Generate Your French Story
+            Generate Your Story in {getLanguageLabel(learningLanguage)}
           </CardTitle>
           <CardDescription>
-            Enter a topic and choose a length to create a beginner-friendly story in French.
+            Enter a topic and choose a length to create a beginner-friendly story in {getLanguageLabel(learningLanguage)}.
           </CardDescription>
         </CardHeader>
         <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -142,7 +151,7 @@ export default function StoriesPage() {
               <Label htmlFor="topic">Story Topic</Label>
               <Input
                 id="topic"
-                placeholder="e.g., A cat's adventure, A day at the park"
+                placeholder={`e.g., A cat's adventure, A day at the park (in ${getLanguageLabel(spokenLanguage)} or ${getLanguageLabel(learningLanguage)})`}
                 {...form.register("topic")}
                 disabled={isLoading}
               />
@@ -200,7 +209,7 @@ export default function StoriesPage() {
           <CardHeader>
             <CardTitle className="font-headline text-3xl text-accent">{story.title}</CardTitle>
             <CardDescription className="flex items-center gap-1 pt-1">
-              <Info size={14}/> Click on a sentence to see its English translation.
+              <Info size={14}/> Click on a sentence to see its translation in {getLanguageLabel(spokenLanguage)}.
             </CardDescription>
           </CardHeader>
           <CardContent className="prose prose-lg max-w-none dark:prose-invert font-body leading-relaxed">
@@ -213,7 +222,7 @@ export default function StoriesPage() {
                       onClick={() => {if (!sentence.translation && !sentence.isTranslating) handleSentenceClick(sentence.id)}}
                       role="button"
                       tabIndex={0}
-                      aria-label={`French sentence: ${sentence.text}. Click to translate.`}
+                      aria-label={`Sentence in ${getLanguageLabel(learningLanguage)}: ${sentence.text}. Click to translate to ${getLanguageLabel(spokenLanguage)}.`}
                     >
                       {sentence.text}{' '}
                     </span>
@@ -222,16 +231,16 @@ export default function StoriesPage() {
                     <AlertDialogHeader>
                       <AlertDialogTitle>Translation</AlertDialogTitle>
                       <AlertDialogDescription className="font-code text-base">
-                        <strong>French:</strong> {sentence.text}
+                        <strong>{getLanguageLabel(learningLanguage)}:</strong> {sentence.text}
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <div className="py-4">
-                      {sentence.isTranslating && <div className="flex items-center gap-2"><Loader2 className="h-5 w-5 animate-spin"/> Translating...</div>}
-                      {sentence.translation && <p><strong>English:</strong> {sentence.translation}</p>}
+                      {sentence.isTranslating && <div className="flex items-center gap-2"><Loader2 className="h-5 w-5 animate-spin"/> Translating to {getLanguageLabel(spokenLanguage)}...</div>}
+                      {sentence.translation && <p><strong>{getLanguageLabel(spokenLanguage)}:</strong> {sentence.translation}</p>}
                     </div>
                     <AlertDialogFooter>
                        {!sentence.translation && !sentence.isTranslating && (
-                         <Button onClick={() => handleSentenceClick(sentence.id)}>Translate</Button>
+                         <Button onClick={() => handleSentenceClick(sentence.id)}>Translate to {getLanguageLabel(spokenLanguage)}</Button>
                        )}
                       <AlertDialogAction>Close</AlertDialogAction>
                     </AlertDialogFooter>

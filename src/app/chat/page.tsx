@@ -1,7 +1,8 @@
+
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -9,6 +10,8 @@ import { Send, User, Bot, Loader2 } from "lucide-react";
 import { aiLanguagePartnerAction } from "@/lib/actions";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useLanguage } from "@/contexts/language-context";
+import type { AiLanguagePartnerInput } from "@/ai/flows/ai-language-partner";
 
 interface Message {
   id: string;
@@ -24,9 +27,10 @@ export default function ChatPage() {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
+  const { learningLanguage, spokenLanguage, getLanguageLabel } = useLanguage();
+  const [initialGreetingSent, setInitialGreetingSent] = useState(false);
 
   useEffect(() => {
-    // Scroll to bottom when messages change
     if (scrollAreaRef.current) {
       const scrollViewport = scrollAreaRef.current.querySelector('div[data-radix-scroll-area-viewport="true"]');
       if (scrollViewport) {
@@ -36,17 +40,22 @@ export default function ChatPage() {
   }, [messages]);
   
   useEffect(() => {
-    // Add an initial greeting message from the AI
-    setMessages([
-      {
-        id: "initial-greeting",
-        text: "Bonjour! Comment puis-je vous aider aujourd'hui? N'hésitez pas à me poser des questions en français ou à me demander des traductions ou des astuces de grammaire.",
-        sender: "ai",
-        timestamp: new Date(),
-      },
-    ]);
+    if (!initialGreetingSent && learningLanguage && spokenLanguage) {
+      const learningLangLabel = getLanguageLabel(learningLanguage);
+      const spokenLangLabel = getLanguageLabel(spokenLanguage);
+      
+      setMessages([
+        {
+          id: "initial-greeting",
+          text: `Hello! I'm your AI partner for learning ${learningLangLabel}. You can chat with me in ${learningLangLabel}, ask for translations to ${spokenLangLabel}, or request grammar tips. How can I help you today?`,
+          sender: "ai",
+          timestamp: new Date(),
+        },
+      ]);
+      setInitialGreetingSent(true);
+    }
     inputRef.current?.focus();
-  }, []);
+  }, [initialGreetingSent, learningLanguage, spokenLanguage, getLanguageLabel]);
 
 
   const handleSendMessage = async (e: React.FormEvent) => {
@@ -64,7 +73,12 @@ export default function ChatPage() {
     setIsLoading(true);
 
     try {
-      const aiResponse = await aiLanguagePartnerAction({ message: userMessage.text });
+      const aiInput: AiLanguagePartnerInput = {
+        message: userMessage.text,
+        learningLanguage: getLanguageLabel(learningLanguage),
+        spokenLanguage: getLanguageLabel(spokenLanguage),
+      };
+      const aiResponse = await aiLanguagePartnerAction(aiInput);
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
         text: aiResponse.response,
@@ -80,7 +94,7 @@ export default function ChatPage() {
       });
        const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
-        text: "Désolé, je n'ai pas pu traiter votre demande. Veuillez réessayer.",
+        text: "Sorry, I couldn't process your request. Please try again.", // Generic error in English
         sender: "ai",
         timestamp: new Date(),
       };
@@ -90,12 +104,14 @@ export default function ChatPage() {
       inputRef.current?.focus();
     }
   };
+  
+  const learningLangLabel = getLanguageLabel(learningLanguage);
 
   return (
     <div className="flex flex-col h-[calc(100vh-8rem)]">
       <Card className="flex-1 flex flex-col shadow-lg">
         <CardHeader className="border-b">
-          <CardTitle className="font-headline text-2xl text-primary">AI Language Partner</CardTitle>
+          <CardTitle className="font-headline text-2xl text-primary">AI Language Partner ({learningLangLabel})</CardTitle>
         </CardHeader>
         <CardContent className="flex-1 p-0 overflow-hidden">
           <ScrollArea className="h-full p-6" ref={scrollAreaRef}>
@@ -149,7 +165,7 @@ export default function ChatPage() {
             <Input
               ref={inputRef}
               type="text"
-              placeholder="Type your message in French or ask a question..."
+              placeholder={`Type your message in ${learningLangLabel} or ask a question...`}
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               className="flex-1"

@@ -1,8 +1,10 @@
+
 import type { Metadata } from "next";
 import "./globals.css";
 import { Providers } from "@/components/providers";
 import { Toaster } from "@/components/ui/toaster";
 import AppLayout from "@/components/layout/app-layout";
+import { LanguageProvider } from "@/contexts/language-context";
 
 export const metadata: Metadata = {
   title: "Ongea - French Learning Companion",
@@ -24,10 +26,12 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased min-h-screen bg-background text-foreground">
         <Providers attribute="class" defaultTheme="system" enableSystem>
-          <AppLayout>
-            {children}
-          </AppLayout>
-          <Toaster />
+          <LanguageProvider>
+            <AppLayout>
+              {children}
+            </AppLayout>
+            <Toaster />
+          </LanguageProvider>
         </Providers>
       </body>
     </html>

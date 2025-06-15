@@ -1,11 +1,13 @@
+
 "use server";
 
-import { generateFrenchStory as generateFrenchStoryFlow, GenerateFrenchStoryInput, GenerateFrenchStoryOutput } from "@/ai/flows/generate-french-story";
+import { generateStory as generateStoryFlow, GenerateStoryInput, GenerateStoryOutput } from "@/ai/flows/generate-story";
 import { aiLanguagePartner as aiLanguagePartnerFlow, AiLanguagePartnerInput, AiLanguagePartnerOutput } from "@/ai/flows/ai-language-partner";
 
-export async function generateStoryAction(input: GenerateFrenchStoryInput): Promise<GenerateFrenchStoryOutput> {
+export async function generateStoryAction(input: GenerateStoryInput): Promise<GenerateStoryOutput> {
   try {
-    const storyData = await generateFrenchStoryFlow(input);
+    // learningLanguage and spokenLanguage are now part of GenerateStoryInput
+    const storyData = await generateStoryFlow(input);
     if (!storyData || !storyData.story || !storyData.title) {
       throw new Error("AI failed to generate a valid story.");
     }
@@ -18,6 +20,7 @@ export async function generateStoryAction(input: GenerateFrenchStoryInput): Prom
 
 export async function aiLanguagePartnerAction(input: AiLanguagePartnerInput): Promise<AiLanguagePartnerOutput> {
   try {
+    // learningLanguage and spokenLanguage are now part of AiLanguagePartnerInput
     const response = await aiLanguagePartnerFlow(input);
     if (!response || !response.response) {
       throw new Error("AI failed to provide a response.");
@@ -29,21 +32,19 @@ export async function aiLanguagePartnerAction(input: AiLanguagePartnerInput): Pr
   }
 }
 
-export async function translateSentenceAction(sentence: string): Promise<string> {
+export async function translateSentenceAction(sentence: string, sourceLanguage: string, targetLanguage: string): Promise<string> {
   try {
-    // Instruct the AI to only provide the translation.
+    const promptMessage = `Translate the following sentence from ${sourceLanguage} to ${targetLanguage} and provide ONLY the ${targetLanguage} translation: "${sentence}"`;
+    
     const input: AiLanguagePartnerInput = {
-      message: `Translate the following French sentence to English and provide ONLY the English translation: "${sentence}"`,
+      message: promptMessage,
+      learningLanguage: sourceLanguage, // Context for the AI model
+      spokenLanguage: targetLanguage,   // Context for the AI model
     };
     const result = await aiLanguagePartnerFlow(input);
     
-    // Simple heuristic: if the response includes "English translation:", try to extract text after it.
-    // This is a fallback if the AI doesn't strictly follow "ONLY the translation".
-    const translationMarker = "English translation:";
-    if (result.response.includes(translationMarker)) {
-      return result.response.substring(result.response.indexOf(translationMarker) + translationMarker.length).trim();
-    }
-    // Otherwise, assume the whole response is the translation as requested.
+    // The prompt asks for ONLY the translation, so we expect the response to be just that.
+    // We can add more sophisticated extraction logic if the AI doesn't always comply.
     return result.response.trim();
   } catch (error) {
     console.error("Error translating sentence:", error);

@@ -1,9 +1,9 @@
-// This is an automatically generated file. Please do not edit.
+
 'use server';
 /**
- * @fileOverview An AI language partner for French learners.
+ * @fileOverview An AI language partner for learners.
  *
- * - aiLanguagePartner - A function that provides an AI chatbot for French language learning.
+ * - aiLanguagePartner - A function that provides an AI chatbot for language learning.
  * - AiLanguagePartnerInput - The input type for the aiLanguagePartner function.
  * - AiLanguagePartnerOutput - The return type for the aiLanguagePartner function.
  */
@@ -13,11 +13,13 @@ import {z} from 'genkit';
 
 const AiLanguagePartnerInputSchema = z.object({
   message: z.string().describe('The user message to the AI language partner.'),
+  learningLanguage: z.string().describe('The language the user is learning (e.g., "French", "Spanish").'),
+  spokenLanguage: z.string().describe('The user primary language (e.g., "English").'),
 });
 export type AiLanguagePartnerInput = z.infer<typeof AiLanguagePartnerInputSchema>;
 
 const AiLanguagePartnerOutputSchema = z.object({
-  response: z.string().describe('The AI language partner response in French, including grammar tips and translations if requested.'),
+  response: z.string().describe('The AI language partner response, primarily in the learning language, including grammar tips and translations if requested.'),
 });
 export type AiLanguagePartnerOutput = z.infer<typeof AiLanguagePartnerOutputSchema>;
 
@@ -29,13 +31,14 @@ const prompt = ai.definePrompt({
   name: 'aiLanguagePartnerPrompt',
   input: {schema: AiLanguagePartnerInputSchema},
   output: {schema: AiLanguagePartnerOutputSchema},
-  prompt: `You are an AI language partner specializing in French.
+  prompt: `You are an AI language partner.
+The user is learning {{{learningLanguage}}} and their main language is {{{spokenLanguage}}}.
 
-You will converse with the user in French, providing grammar tips and translations on demand.
+Converse with the user primarily in {{{learningLanguage}}}.
+If the user asks for a translation, translate between {{{learningLanguage}}} and {{{spokenLanguage}}}.
+If the user asks for grammar tips for {{{learningLanguage}}}, provide them. You can explain these tips in {{{spokenLanguage}}} if it aids clarity, but prioritize using {{{learningLanguage}}}.
 
 User message: {{{message}}}
-
-Respond in French. If asked for a translation, provide it in English. If asked for grammar tips, provide them in French.
 `,
 });
 
