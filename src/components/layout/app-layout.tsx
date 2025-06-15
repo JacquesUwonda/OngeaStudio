@@ -3,7 +3,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { BookHeart, Languages } from "lucide-react";
+import { BookHeart, Languages, MessageSquareText } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { SidebarNav } from "./sidebar-nav";
 import {
@@ -23,9 +23,23 @@ import {
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 
+const availableLanguages = [
+  { value: "en", label: "English" },
+  { value: "fr", label: "French" },
+  { value: "sw", label: "Swahili" },
+  { value: "lin", label: "Lingala" },
+  { value: "es", label: "Spanish" },
+  { value: "de", label: "German" },
+  { value: "it", label: "Italian" },
+  { value: "pt", label: "Portuguese" },
+  { value: "zh", label: "Mandarin Chinese" },
+  { value: "ja", label: "Japanese" },
+  { value: "ko", label: "Korean" },
+];
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
-  const [selectedLanguage, setSelectedLanguage] = useState("fr");
+  const [spokenLanguage, setSpokenLanguage] = useState("en");
+  const [learningLanguage, setLearningLanguage] = useState("fr");
 
   return (
     <div className="flex min-h-screen">
@@ -46,25 +60,41 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </SidebarContent>
         <SidebarFooter className="p-4 space-y-4">
           <div className="space-y-2 group-data-[collapsible=icon]:hidden">
-            <Label htmlFor="language-select" className="text-xs text-muted-foreground flex items-center">
-              <Languages className="h-4 w-4 mr-1.5" /> Learning Language
+            <Label htmlFor="spoken-language-select" className="text-xs text-muted-foreground flex items-center">
+              <MessageSquareText className="h-4 w-4 mr-1.5" /> Your Language
             </Label>
-            <Select value={selectedLanguage} onValueChange={setSelectedLanguage}>
-              <SelectTrigger id="language-select" className="h-9 text-xs">
-                <SelectValue placeholder="Select language" />
+            <Select value={spokenLanguage} onValueChange={setSpokenLanguage}>
+              <SelectTrigger id="spoken-language-select" className="h-9 text-xs">
+                <SelectValue placeholder="Select your language" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="fr">French</SelectItem>
-                <SelectItem value="es">Spanish</SelectItem>
-                <SelectItem value="de">German</SelectItem>
-                <SelectItem value="it">Italian</SelectItem>
+                {availableLanguages.map(lang => (
+                  <SelectItem key={`spoken-${lang.value}`} value={lang.value}>{lang.label}</SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
+
+          <div className="space-y-2 group-data-[collapsible=icon]:hidden">
+            <Label htmlFor="learning-language-select" className="text-xs text-muted-foreground flex items-center">
+              <Languages className="h-4 w-4 mr-1.5" /> Learning Language
+            </Label>
+            <Select value={learningLanguage} onValueChange={setLearningLanguage}>
+              <SelectTrigger id="learning-language-select" className="h-9 text-xs">
+                <SelectValue placeholder="Select language to learn" />
+              </SelectTrigger>
+              <SelectContent>
+                {availableLanguages.map(lang => (
+                  <SelectItem key={`learning-${lang.value}`} value={lang.value}>{lang.label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          
           <p className="text-xs text-muted-foreground group-data-[collapsible=icon]:hidden">
             © 2025 Ongea by Jacques Uwonda
           </p>
-           <div className="group-data-[collapsible=icon]:flex group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:w-full hidden">
+           <div className="group-data-[collapsible=icon]:flex group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:w-full hidden mt-2">
              <Languages className="h-5 w-5 text-muted-foreground" />
            </div>
         </SidebarFooter>
