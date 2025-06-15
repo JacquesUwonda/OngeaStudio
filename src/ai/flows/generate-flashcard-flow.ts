@@ -1,68 +1,74 @@
 
 'use server';
 /**
- * @fileOverview Flow for generating a single flashcard for language learning.
+ * @fileOverview Flow for generating a set of flashcards for language learning.
  *
- * - generateFlashcard - A function that handles the flashcard generation process.
- * - GenerateFlashcardInput - The input type for the generateFlashcard function.
- * - GenerateFlashcardOutput - The return type for the generateFlashcard function.
+ * - generateFlashcards - A function that handles the flashcard set generation process.
+ * - GenerateFlashcardsInput - The input type for the generateFlashcards function.
+ * - GenerateFlashcardsOutput - The return type for the generateFlashcards function.
  */
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
-const GenerateFlashcardInputSchema = z.object({
+const GenerateFlashcardsInputSchema = z.object({
   learningLanguage: z.string().describe('The language the user is learning (e.g., "French", "Spanish").'),
   spokenLanguage: z.string().describe('The user primary language (e.g., "English").'),
-  topicOrWord: z.string().describe('A topic (e.g., "colors", "food") or a specific word/phrase to generate a flashcard for.'),
 });
-export type GenerateFlashcardInput = z.infer<typeof GenerateFlashcardInputSchema>;
+export type GenerateFlashcardsInput = z.infer<typeof GenerateFlashcardsInputSchema>;
 
-const GenerateFlashcardOutputSchema = z.object({
+const FlashcardItemSchema = z.object({
   learningTerm: z.string().describe('The word or phrase in the learning language.'),
   spokenTerm: z.string().describe('The translation of the term in the spoken language.'),
   category: z.string().optional().describe('A suggested category for the flashcard (e.g., "Food", "Travel", "Verbs").'),
 });
-export type GenerateFlashcardOutput = z.infer<typeof GenerateFlashcardOutputSchema>;
 
-export async function generateFlashcard(input: GenerateFlashcardInput): Promise<GenerateFlashcardOutput> {
-  return generateFlashcardFlow(input);
+const GenerateFlashcardsOutputSchema = z.object({
+  flashcards: z.array(FlashcardItemSchema).length(20).describe('An array of 20 flashcards.'),
+});
+export type GenerateFlashcardsOutput = z.infer<typeof GenerateFlashcardsOutputSchema>;
+
+export async function generateFlashcards(input: GenerateFlashcardsInput): Promise<GenerateFlashcardsOutput> {
+  return generateFlashcardsFlow(input);
 }
 
 const prompt = ai.definePrompt({
-  name: 'generateFlashcardPrompt',
-  input: {schema: GenerateFlashcardInputSchema},
-  output: {schema: GenerateFlashcardOutputSchema},
-  prompt: `You are an assistant that creates flashcards for language learners.
+  name: 'generateFlashcardsPrompt',
+  input: {schema: GenerateFlashcardsInputSchema},
+  output: {schema: GenerateFlashcardsOutputSchema},
+  prompt: `You are an assistant that creates sets of flashcards for language learners.
 The user's spoken language is {{{spokenLanguage}}} and they are learning {{{learningLanguage}}}.
 
-Based on the user input '{{{topicOrWord}}}', generate a single flashcard.
+Generate a list of 20 common, beginner-level words or short phrases in {{{learningLanguage}}}.
+For each word/phrase, provide its direct translation in {{{spokenLanguage}}}.
+Optionally, suggest a concise category for each flashcard (e.g., "Food", "Numbers", "Common Verbs", "Adjectives").
 
-- If the input seems like a general topic (e.g., "fruits", "travel vocabulary", "common verbs"), provide a relevant word or short phrase from that topic in {{{learningLanguage}}} and its direct translation in {{{spokenLanguage}}}.
-- If the input seems like a specific word or phrase in either {{{learningLanguage}}} or {{{spokenLanguage}}}, provide its translation in the other language.
-- Ensure the learningTerm is in {{{learningLanguage}}} and spokenTerm is in {{{spokenLanguage}}}.
-- Optionally, suggest a concise category for this flashcard (e.g., "Food", "Travel", "Verbs", "Adjectives").
+Return ONLY a JSON object with a "flashcards" key, where the value is an array of 20 flashcard objects.
+Each flashcard object must have "learningTerm", "spokenTerm", and optionally "category".
 
-Return ONLY the JSON object with "learningTerm", "spokenTerm", and "category" (if applicable).
-Example for input "apple", learning "French", spoken "English":
-{ "learningTerm": "pomme", "spokenTerm": "apple", "category": "Fruit" }
-
-Example for input "colors", learning "Spanish", spoken "English":
-{ "learningTerm": "azul", "spokenTerm": "blue", "category": "Colors" }
+Example structure for the output:
+{
+  "flashcards": [
+    { "learningTerm": "le chat", "spokenTerm": "the cat", "category": "Animals" },
+    { "learningTerm": "manger", "spokenTerm": "to eat", "category": "Verbs" },
+    // ... 18 more flashcards
+  ]
+}
 `,
 });
 
-const generateFlashcardFlow = ai.defineFlow(
+const generateFlashcardsFlow = ai.defineFlow(
   {
-    name: 'generateFlashcardFlow',
-    inputSchema: GenerateFlashcardInputSchema,
-    outputSchema: GenerateFlashcardOutputSchema,
+    name: 'generateFlashcardsFlow',
+    inputSchema: GenerateFlashcardsInputSchema,
+    outputSchema: GenerateFlashcardsOutputSchema,
   },
   async input => {
     const {output} = await prompt(input);
-    if (!output) {
-      throw new Error("AI failed to generate flashcard output.");
+    if (!output || !output.flashcards || output.flashcards.length !== 20) {
+      throw new Error("AI failed to generate a valid set of 20 flashcards.");
     }
     return output;
   }
 );
+

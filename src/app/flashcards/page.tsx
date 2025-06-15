@@ -3,24 +3,18 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import { Flashcard } from "@/components/flashcard";
-import { flashcards as staticFlashcardsData, FlashcardData as StaticFlashcardType } from "@/data/flashcards";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { ChevronLeft, ChevronRight, RotateCcw, Sparkles, Loader2 } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { useLanguage } from "@/contexts/language-context";
 import { useToast } from "@/hooks/use-toast";
-import { generateFlashcardAction } from "@/lib/actions";
-import type { GenerateFlashcardInput, GenerateFlashcardOutput } from "@/ai/flows/generate-flashcard-flow";
+import { generateFlashcardsAction } from "@/lib/actions";
+import type { GenerateFlashcardsInput } from "@/ai/flows/generate-flashcard-flow";
+import type { ProcessedFlashcard } from "@/lib/actions";
 
-// Represents the structure of the card currently being displayed
-interface DisplayedFlashcard {
+interface DisplayedFlashcard extends ProcessedFlashcard {
   id: string;
-  learningTerm: string;
-  spokenTerm: string;
-  category?: string;
   learningLangTTS: string;
   spokenLangTTS: string;
 }
@@ -29,49 +23,62 @@ export default function FlashcardsPage() {
   const { learningLanguage, spokenLanguage, getLanguageLabel, getLanguageTtsCode } = useLanguage();
   const { toast } = useToast();
 
-  const [shuffledStaticCards, setShuffledStaticCards] = useState<StaticFlashcardType[]>([]);
-  const [currentStaticIndex, setCurrentStaticIndex] = useState(0);
+  const [currentFlashcards, setCurrentFlashcards] = useState<DisplayedFlashcard[]>([]);
+  const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [currentDisplayedCard, setCurrentDisplayedCard] = useState<DisplayedFlashcard | null>(null);
   
-  const [knownCardIds, setKnownCardIds] = useState<string[]>([]); // Tracks IDs of known static cards
+  const [knownCardIds, setKnownCardIds] = useState<string[]>([]);
   const [sessionCompleted, setSessionCompleted] = useState(false);
-
-  const [generateTopic, setGenerateTopic] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
 
-  const mapStaticToDisplayed = useCallback((staticCard: StaticFlashcardType): DisplayedFlashcard => {
-    // Static cards are French/English. This mapping makes them displayable.
-    // Their relevance depends on current language selection.
+  const mapProcessedToDisplayed = useCallback((processedCard: ProcessedFlashcard, index: number): DisplayedFlashcard => {
     return {
-      id: staticCard.id,
-      learningTerm: staticCard.french, // Assuming static cards' "french" field is the term to learn
-      spokenTerm: staticCard.english,   // Assuming static cards' "english" field is the translation
-      category: staticCard.category,
-      learningLangTTS: 'fr-FR', // Static cards are Fr
-      spokenLangTTS: 'en-US',   // Static cards are En
+      ...processedCard,
+      id: `generated-${Date.now()}-${index}`,
+      learningLangTTS: getLanguageTtsCode(learningLanguage),
+      spokenLangTTS: getLanguageTtsCode(spokenLanguage),
     };
-  }, []);
+  }, [learningLanguage, spokenLanguage, getLanguageTtsCode]);
 
-  const initializeOrResetSession = useCallback(() => {
-    const shuffled = [...staticFlashcardsData].sort(() => Math.random() - 0.5);
-    setShuffledStaticCards(shuffled);
-    setCurrentStaticIndex(0);
-    setKnownCardIds([]);
+  const fetchAndSetNewFlashcards = useCallback(async () => {
+    setIsGenerating(true);
     setSessionCompleted(false);
-    if (shuffled.length > 0) {
-      setCurrentDisplayedCard(mapStaticToDisplayed(shuffled[0]));
-    } else {
-      setCurrentDisplayedCard(null);
+    setCurrentFlashcards([]);
+    setCurrentDisplayedCard(null);
+    setKnownCardIds([]);
+    setCurrentCardIndex(0);
+
+    try {
+      const input: GenerateFlashcardsInput = {
+        learningLanguage: getLanguageLabel(learningLanguage),
+        spokenLanguage: getLanguageLabel(spokenLanguage),
+      };
+      const results = await generateFlashcardsAction(input);
+      if (results && results.length > 0) {
+        const newDisplayedCards = results.map(mapProcessedToDisplayed);
+        setCurrentFlashcards(newDisplayedCards);
+        setCurrentDisplayedCard(newDisplayedCards[0]);
+        toast({ title: "New Flashcard Set Generated!", description: `20 new cards for your ${getLanguageLabel(learningLanguage)} learning.` });
+      } else {
+        toast({ title: "No Flashcards Generated", description: "The AI couldn't generate cards. Please try again.", variant: "destructive" });
+      }
+    } catch (error) {
+      toast({
+        title: "Error Generating Flashcards",
+        description: (error as Error).message || "Could not generate flashcard set.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsGenerating(false);
     }
-  }, [mapStaticToDisplayed]);
+  }, [learningLanguage, spokenLanguage, getLanguageLabel, mapProcessedToDisplayed, toast]);
 
   useEffect(() => {
-    initializeOrResetSession();
-  }, [initializeOrResetSession]);
+    fetchAndSetNewFlashcards();
+  }, [fetchAndSetNewFlashcards]); // Runs when languages change, or on initial load
 
   const handleKnow = () => {
-    if (currentDisplayedCard && staticFlashcardsData.some(sc => sc.id === currentDisplayedCard.id)) {
-      // Only add to knownCardIds if it's one of the original static cards
+    if (currentDisplayedCard) {
       setKnownCardIds(prev => [...new Set([...prev, currentDisplayedCard.id])]);
     }
     goToNextCard();
@@ -82,119 +89,98 @@ export default function FlashcardsPage() {
   };
 
   const goToNextCard = () => {
-    if (currentStaticIndex < shuffledStaticCards.length - 1) {
-      const nextIdx = currentStaticIndex + 1;
-      setCurrentStaticIndex(nextIdx);
-      setCurrentDisplayedCard(mapStaticToDisplayed(shuffledStaticCards[nextIdx]));
-    } else {
-      // Reached end of static cards
-      if (shuffledStaticCards.length > 0) {
-         setSessionCompleted(true); // Only complete session if there were static cards
-      } else if (!currentDisplayedCard) {
-        // No static cards and no generated card displayed, maybe show a message or allow generation
-      }
+    if (currentCardIndex < currentFlashcards.length - 1) {
+      const nextIdx = currentCardIndex + 1;
+      setCurrentCardIndex(nextIdx);
+      setCurrentDisplayedCard(currentFlashcards[nextIdx]);
+    } else if (currentFlashcards.length > 0) {
+      setSessionCompleted(true);
     }
   };
 
   const goToPreviousCard = () => {
-    if (currentStaticIndex > 0) {
-      const prevIdx = currentStaticIndex - 1;
-      setCurrentStaticIndex(prevIdx);
-      setCurrentDisplayedCard(mapStaticToDisplayed(shuffledStaticCards[prevIdx]));
-      setSessionCompleted(false); // If going back, session is no longer "completed"
+    if (currentCardIndex > 0) {
+      const prevIdx = currentCardIndex - 1;
+      setCurrentCardIndex(prevIdx);
+      setCurrentDisplayedCard(currentFlashcards[prevIdx]);
+      setSessionCompleted(false);
     }
   };
   
-  const restartSession = () => {
-    initializeOrResetSession();
-  };
+  const totalCards = currentFlashcards.length;
+  const progress = totalCards > 0 ? ((currentCardIndex +1) / totalCards) * 100 : 0;
+  const knownPercentage = totalCards > 0 ? (knownCardIds.length / totalCards) * 100 : 0;
 
-  const handleGenerateFlashcard = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!generateTopic.trim() || isGenerating) return;
-
-    setIsGenerating(true);
-    try {
-      const input: GenerateFlashcardInput = {
-        learningLanguage: getLanguageLabel(learningLanguage),
-        spokenLanguage: getLanguageLabel(spokenLanguage),
-        topicOrWord: generateTopic,
-      };
-      const result = await generateFlashcardAction(input);
-      const newCard: DisplayedFlashcard = {
-        id: `generated-${Date.now()}`,
-        learningTerm: result.learningTerm,
-        spokenTerm: result.spokenTerm,
-        category: result.category,
-        learningLangTTS: getLanguageTtsCode(learningLanguage),
-        spokenLangTTS: getLanguageTtsCode(spokenLanguage),
-      };
-      setCurrentDisplayedCard(newCard);
-      setGenerateTopic(""); 
-      setSessionCompleted(false); // A new card is shown, so session isn't "completed" in the same way
-      toast({ title: "Flashcard Generated!", description: `New card for "${result.learningTerm}" created.` });
-    } catch (error) {
-      toast({
-        title: "Error Generating Flashcard",
-        description: (error as Error).message || "Could not generate flashcard.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsGenerating(false);
-    }
-  };
-  
-  const totalStaticCards = shuffledStaticCards.length;
-  const progress = totalStaticCards > 0 ? (currentStaticIndex / totalStaticCards) * 100 : 0;
-  const knownPercentage = totalStaticCards > 0 ? (knownCardIds.length / totalStaticCards) * 100 : 0;
-
-  if (sessionCompleted && totalStaticCards > 0) {
+  if (isGenerating && currentFlashcards.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center h-full text-center p-4 space-y-8">
         <Card className="w-full max-w-md p-8 shadow-xl">
           <CardHeader>
-            <CardTitle className="text-3xl font-headline text-primary">Static Set Complete!</CardTitle>
+            <CardTitle className="text-3xl font-headline text-primary flex items-center justify-center">
+              <Loader2 className="mr-3 h-8 w-8 animate-spin" />
+              Generating Flashcards...
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-lg mb-2">You reviewed all {totalStaticCards} static flashcards.</p>
+            <p className="text-lg">Please wait while we prepare your new set of 20 flashcards for {getLanguageLabel(learningLanguage)}.</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+  
+  if (sessionCompleted && totalCards > 0) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full text-center p-4 space-y-8">
+        <Card className="w-full max-w-md p-8 shadow-xl">
+          <CardHeader>
+            <CardTitle className="text-3xl font-headline text-primary">Set Complete!</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-lg mb-2">You reviewed all {totalCards} flashcards.</p>
             <p className="text-xl font-semibold mb-4">
               You knew <span className="text-accent">{knownCardIds.length}</span> ({Math.round(knownPercentage)}%) of them.
             </p>
-            <Button onClick={restartSession} size="lg">
-              <RotateCcw className="mr-2 h-5 w-5" />
-              Practice Static Set Again
+            <Button onClick={fetchAndSetNewFlashcards} size="lg" disabled={isGenerating}>
+              {isGenerating ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Sparkles className="mr-2 h-5 w-5" />}
+              Generate New Set (20 Cards)
             </Button>
           </CardContent>
         </Card>
-        <FlashcardGenerationModule 
-          generateTopic={generateTopic}
-          setGenerateTopic={setGenerateTopic}
-          handleGenerateFlashcard={handleGenerateFlashcard}
-          isGenerating={isGenerating}
-          learningLanguageLabel={getLanguageLabel(learningLanguage)}
-          spokenLanguageLabel={getLanguageLabel(spokenLanguage)}
-        />
       </div>
     );
   }
 
   return (
     <div className="flex flex-col items-center justify-start min-h-[calc(100vh-10rem)] p-4 space-y-8">
-      <FlashcardGenerationModule 
-        generateTopic={generateTopic}
-        setGenerateTopic={setGenerateTopic}
-        handleGenerateFlashcard={handleGenerateFlashcard}
-        isGenerating={isGenerating}
-        learningLanguageLabel={getLanguageLabel(learningLanguage)}
-        spokenLanguageLabel={getLanguageLabel(spokenLanguage)}
-      />
+      <Card className="w-full max-w-md shadow-lg">
+        <CardHeader>
+          <CardTitle className="font-headline text-xl text-primary flex items-center">
+            <Sparkles className="mr-2 h-5 w-5" />
+            Learn with AI Flashcards
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+           <p className="text-sm text-muted-foreground mb-4">
+            A new set of 20 flashcards for {getLanguageLabel(learningLanguage)} (translated to {getLanguageLabel(spokenLanguage)}) is generated each time.
+          </p>
+          <Button onClick={fetchAndSetNewFlashcards} disabled={isGenerating} className="w-full">
+            {isGenerating ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <RotateCcw className="mr-2 h-4 w-4" />
+            )}
+            Generate New Set (20 Cards)
+          </Button>
+        </CardContent>
+      </Card>
 
       {currentDisplayedCard ? (
         <>
-          {totalStaticCards > 0 && (
+          {totalCards > 0 && (
             <div className="w-full max-w-md">
               <div className="flex justify-between items-center mb-2 text-sm text-muted-foreground">
-                <span>Card {currentStaticIndex + 1} of {totalStaticCards} (Static Set)</span>
+                <span>Card {currentCardIndex + 1} of {totalCards}</span>
                 <span>Known: {knownCardIds.length} ({Math.round(knownPercentage)}%)</span>
               </div>
               <Progress value={progress} className="w-full h-2 mb-2" />
@@ -214,7 +200,7 @@ export default function FlashcardsPage() {
             <Button 
               variant="outline" 
               onClick={goToPreviousCard} 
-              disabled={currentStaticIndex === 0 || totalStaticCards === 0} 
+              disabled={currentCardIndex === 0 || totalCards === 0 || isGenerating} 
               className="px-6 py-3"
             >
               <ChevronLeft className="mr-2 h-5 w-5" /> Previous
@@ -222,82 +208,20 @@ export default function FlashcardsPage() {
             <Button 
               variant="outline" 
               onClick={goToNextCard} 
-              disabled={(currentStaticIndex >= totalStaticCards -1 && totalStaticCards > 0) || totalStaticCards === 0} 
+              disabled={(currentCardIndex >= totalCards -1 && totalCards > 0) || totalCards === 0 || isGenerating} 
               className="px-6 py-3"
             >
               Next <ChevronRight className="ml-2 h-5 w-5" />
             </Button>
           </div>
-          {totalStaticCards > 0 && (
-            <Button variant="ghost" onClick={restartSession} className="mt-2 text-sm text-muted-foreground">
-              <RotateCcw className="mr-2 h-4 w-4" />
-              Restart Static Set
-            </Button>
-          )}
         </>
       ) : (
-         <div className="text-center text-muted-foreground p-8">
-            <p className="mb-4">No flashcards to display. Try generating one!</p>
-            {totalStaticCards === 0 && <p className="text-sm">(There are no pre-loaded static cards for this session.)</p>}
-        </div>
+         !isGenerating && (
+            <div className="text-center text-muted-foreground p-8">
+                <p className="mb-4">No flashcards to display. Click the button above to generate a new set.</p>
+            </div>
+         )
       )}
     </div>
-  );
-}
-
-
-interface FlashcardGenerationModuleProps {
-  generateTopic: string;
-  setGenerateTopic: (value: string) => void;
-  handleGenerateFlashcard: (e: React.FormEvent) => Promise<void>;
-  isGenerating: boolean;
-  learningLanguageLabel: string;
-  spokenLanguageLabel: string;
-}
-
-function FlashcardGenerationModule({
-  generateTopic,
-  setGenerateTopic,
-  handleGenerateFlashcard,
-  isGenerating,
-  learningLanguageLabel,
-  spokenLanguageLabel
-}: FlashcardGenerationModuleProps) {
-  return (
-    <Card className="w-full max-w-md shadow-lg">
-      <CardHeader>
-        <CardTitle className="font-headline text-xl text-primary flex items-center">
-          <Sparkles className="mr-2 h-5 w-5" />
-          Generate New Flashcard
-        </CardTitle>
-        <CardDescription>
-          Enter a topic or word (in {spokenLanguageLabel} or {learningLanguageLabel}) to generate a new flashcard for your {learningLanguageLabel} learning.
-        </CardDescription>
-      </CardHeader>
-      <form onSubmit={handleGenerateFlashcard}>
-        <CardContent className="space-y-4">
-          <div>
-            <Label htmlFor="topicOrWord">Topic or Word</Label>
-            <Input
-              id="topicOrWord"
-              value={generateTopic}
-              onChange={(e) => setGenerateTopic(e.target.value)}
-              placeholder={`e.g., "animals", "hello", "apple"`}
-              disabled={isGenerating}
-            />
-          </div>
-        </CardContent>
-        <CardFooter>
-          <Button type="submit" disabled={isGenerating || !generateTopic.trim()} className="w-full">
-            {isGenerating ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            ) : (
-              <Sparkles className="mr-2 h-4 w-4" />
-            )}
-            Generate Card
-          </Button>
-        </CardFooter>
-      </form>
-    </Card>
   );
 }
