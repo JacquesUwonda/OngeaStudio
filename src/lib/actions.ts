@@ -3,10 +3,11 @@
 
 import { generateStory as generateStoryFlow, GenerateStoryInput, GenerateStoryOutput } from "@/ai/flows/generate-story";
 import { aiLanguagePartner as aiLanguagePartnerFlow, AiLanguagePartnerInput, AiLanguagePartnerOutput } from "@/ai/flows/ai-language-partner";
+import { generateFlashcard as generateFlashcardFlow, GenerateFlashcardInput, GenerateFlashcardOutput } from "@/ai/flows/generate-flashcard-flow";
+
 
 export async function generateStoryAction(input: GenerateStoryInput): Promise<GenerateStoryOutput> {
   try {
-    // learningLanguage and spokenLanguage are now part of GenerateStoryInput
     const storyData = await generateStoryFlow(input);
     if (!storyData || !storyData.story || !storyData.title) {
       throw new Error("AI failed to generate a valid story.");
@@ -20,7 +21,6 @@ export async function generateStoryAction(input: GenerateStoryInput): Promise<Ge
 
 export async function aiLanguagePartnerAction(input: AiLanguagePartnerInput): Promise<AiLanguagePartnerOutput> {
   try {
-    // learningLanguage and spokenLanguage are now part of AiLanguagePartnerInput
     const response = await aiLanguagePartnerFlow(input);
     if (!response || !response.response) {
       throw new Error("AI failed to provide a response.");
@@ -38,16 +38,27 @@ export async function translateSentenceAction(sentence: string, sourceLanguage: 
     
     const input: AiLanguagePartnerInput = {
       message: promptMessage,
-      learningLanguage: sourceLanguage, // Context for the AI model
-      spokenLanguage: targetLanguage,   // Context for the AI model
+      learningLanguage: sourceLanguage, 
+      spokenLanguage: targetLanguage,   
     };
     const result = await aiLanguagePartnerFlow(input);
-    
-    // The prompt asks for ONLY the translation, so we expect the response to be just that.
-    // We can add more sophisticated extraction logic if the AI doesn't always comply.
     return result.response.trim();
   } catch (error) {
     console.error("Error translating sentence:", error);
     return "Translation failed.";
+  }
+}
+
+export async function generateFlashcardAction(input: GenerateFlashcardInput): Promise<GenerateFlashcardOutput> {
+  try {
+    const flashcardData = await generateFlashcardFlow(input);
+    if (!flashcardData || !flashcardData.learningTerm || !flashcardData.spokenTerm) {
+      throw new Error("AI failed to generate a valid flashcard.");
+    }
+    return flashcardData;
+  } catch (error)
+ {
+    console.error("Error generating flashcard:", error);
+    throw new Error("Failed to generate flashcard. Please try again.");
   }
 }

@@ -4,17 +4,18 @@
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 
 export const availableLanguages = [
-  { value: "en", label: "English" },
-  { value: "fr", label: "French" },
-  { value: "sw", label: "Swahili" },
-  { value: "lin", label: "Lingala" },
-  { value: "es", label: "Spanish" },
-  { value: "de", label: "German" },
-  { value: "it", label: "Italian" },
-  { value: "pt", label: "Portuguese" },
-  { value: "zh", label: "Mandarin Chinese" },
-  { value: "ja", label: "Japanese" },
-  { value: "ko", label: "Korean" },
+  { value: "en", label: "English", ttsCode: "en-US" },
+  { value: "fr", label: "French", ttsCode: "fr-FR" },
+  { value: "sw", label: "Swahili", ttsCode: "sw-KE" },
+  { value: "lin", label: "Lingala", ttsCode: "ln-CD" }, // Lingala (Congo Kinshasa)
+  { value: "es", label: "Spanish", ttsCode: "es-ES" },
+  { value: "de", label: "German", ttsCode: "de-DE" },
+  { value: "it", label: "Italian", ttsCode: "it-IT" },
+  { value: "pt", label: "Portuguese", ttsCode: "pt-PT" }, // European Portuguese
+  { value: "zh", label: "Mandarin Chinese", ttsCode: "zh-CN" },
+  { value: "ja", label: "Japanese", ttsCode: "ja-JP" },
+  { value: "ko", label: "Korean", ttsCode: "ko-KR" },
+  // Add more languages as needed
 ];
 
 export interface LanguageContextType {
@@ -23,6 +24,7 @@ export interface LanguageContextType {
   learningLanguage: string;
   setLearningLanguage: (lang: string) => void;
   getLanguageLabel: (value: string) => string;
+  getLanguageTtsCode: (value: string) => string;
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
@@ -31,7 +33,6 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
   const [spokenLanguage, setSpokenLanguageState] = useState<string>("en");
   const [learningLanguage, setLearningLanguageState] = useState<string>("fr");
 
-  // Persist language preferences to localStorage
   useEffect(() => {
     const storedSpokenLanguage = localStorage.getItem("spokenLanguage");
     if (storedSpokenLanguage) {
@@ -56,10 +57,15 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
   const getLanguageLabel = (value: string): string => {
     const lang = availableLanguages.find(l => l.value === value);
     return lang ? lang.label : value;
-  }
+  };
+
+  const getLanguageTtsCode = (value: string): string => {
+    const lang = availableLanguages.find(l => l.value === value);
+    return lang ? lang.ttsCode : value; // Fallback to value if no ttsCode found
+  };
   
   return (
-    <LanguageContext.Provider value={{ spokenLanguage, setSpokenLanguage, learningLanguage, setLearningLanguage, getLanguageLabel }}>
+    <LanguageContext.Provider value={{ spokenLanguage, setSpokenLanguage, learningLanguage, setLearningLanguage, getLanguageLabel, getLanguageTtsCode }}>
       {children}
     </LanguageContext.Provider>
   );
@@ -72,3 +78,4 @@ export const useLanguage = (): LanguageContextType => {
   }
   return context;
 };
+
