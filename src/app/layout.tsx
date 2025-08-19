@@ -3,12 +3,11 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Providers } from "@/components/providers";
 import { Toaster } from "@/components/ui/toaster";
-import AppLayout from "@/components/layout/app-layout";
 import { LanguageProvider } from "@/contexts/language-context";
 
 export const metadata: Metadata = {
-  title: "Ongea - French Learning Companion",
-  description: "Learn French with interactive stories, flashcards, and an AI language partner.",
+  title: "Ongea - Your AI Language Learning Companion",
+  description: "Learn any language with interactive stories, flashcards, and an AI language partner.",
 };
 
 export default function RootLayout({
@@ -27,9 +26,7 @@ export default function RootLayout({
       <body className="font-body antialiased min-h-screen bg-background text-foreground">
         <Providers attribute="class" defaultTheme="system" enableSystem>
           <LanguageProvider>
-            <AppLayout>
-              {children}
-            </AppLayout>
+            {children}
             <Toaster />
           </LanguageProvider>
         </Providers>
