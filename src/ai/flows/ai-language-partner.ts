@@ -4,12 +4,13 @@
  * @fileOverview An AI language partner for learners.
  *
  * - aiLanguagePartner - A function that provides an AI chatbot for language learning.
- * - AiLanguagePartnerInput - The input type for the aiLanguagePartner function.
- * - AiLanguagePartnerOutput - The return type for the aiLanguagePartner function.
+ * - AiLanguagePartnerInput - The input type for the aiLanguagepartner function.
+ * - AiLanguagePartnerOutput - The return type for the aiLanguagepartner function.
  */
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
+import {generateStream} from 'genkit/generate';
 
 const AiLanguagePartnerInputSchema = z.object({
   message: z.string().describe('The user message to the AI language partner.'),
@@ -18,20 +19,15 @@ const AiLanguagePartnerInputSchema = z.object({
 });
 export type AiLanguagePartnerInput = z.infer<typeof AiLanguagePartnerInputSchema>;
 
-const AiLanguagePartnerOutputSchema = z.object({
-  response: z.string().describe('The AI language partner response, primarily in the spoken language. It includes explanations for grammar/translations regarding the learning language.'),
-});
-export type AiLanguagePartnerOutput = z.infer<typeof AiLanguagePartnerOutputSchema>;
+// The output is no longer a single object but a stream of strings
+export type AiLanguagePartnerOutput = AsyncGenerator<string>;
+
 
 export async function aiLanguagePartner(input: AiLanguagePartnerInput): Promise<AiLanguagePartnerOutput> {
-  return aiLanguagePartnerFlow(input);
+  return aiLanguagePartnerStream(input);
 }
 
-const prompt = ai.definePrompt({
-  name: 'aiLanguagePartnerPrompt',
-  input: {schema: AiLanguagePartnerInputSchema},
-  output: {schema: AiLanguagePartnerOutputSchema},
-  prompt: `You are an AI language partner.
+const prompt = `You are an AI language partner.
 The user is learning {{{learningLanguage}}} and their main language is {{{spokenLanguage}}}.
 
 Your primary goal is to help the user learn {{{learningLanguage}}}.
@@ -51,17 +47,17 @@ If the user sends a message in {{{learningLanguage}}} to practice:
 - Continue the main conversation flow in {{{spokenLanguage}}}.
 
 User message: {{{message}}}
-`,
-});
+`;
 
-const aiLanguagePartnerFlow = ai.defineFlow(
-  {
-    name: 'aiLanguagePartnerFlow',
-    inputSchema: AiLanguagePartnerInputSchema,
-    outputSchema: AiLanguagePartnerOutputSchema,
-  },
-  async input => {
-    const {output} = await prompt(input);
-    return output!;
-  }
-);
+
+async function* aiLanguagePartnerStream(input: AiLanguagePartnerInput): AiLanguagePartnerOutput {
+    const {stream} = ai.generateStream({
+        prompt,
+        history: [], // If you want to maintain conversation history, you can add it here.
+        input,
+    });
+
+    for await (const chunk of stream) {
+        yield chunk.text;
+    }
+}

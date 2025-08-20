@@ -30,37 +30,32 @@ export async function generateStoryAction(input: GenerateStoryInput): Promise<Ge
 }
 
 export async function aiLanguagePartnerAction(input: AiLanguagePartnerInput): Promise<AiLanguagePartnerOutput> {
-  try {
-    const response = await aiLanguagePartnerFlow(input);
-    if (!response || !response.response) {
-      throw new Error("AI failed to provide a response.");
-    }
-    return response;
-  } catch (error) {
-    console.error("Error with AI language partner:", error);
-    throw new Error("Failed to get response from AI partner. Please try again.");
-  }
+    // This action now returns the async generator directly
+    return aiLanguagePartnerFlow(input);
 }
+
 
 export async function translateSentenceAction(sentence: string, sourceLanguage: string, targetLanguage: string): Promise<string> {
   try {
-     // This prompt is more direct and less conversational, aiming for a pure translation.
     const promptMessage = `Translate the following from ${sourceLanguage} to ${targetLanguage}. Return ONLY the translation, with no additional text or explanations.
 
 Sentence to translate: "${sentence}"`;
 
-    const input: AiLanguagePartnerInput = {
+    // The streaming partner flow expects an async generator.
+    // For this specific, non-conversational task, we'll iterate through the stream and collect the full response.
+    const stream = await aiLanguagePartnerFlow({
       message: promptMessage,
-      // We can use the source and target languages directly here.
-      // The AI partner prompt is flexible enough to handle this direction.
       learningLanguage: sourceLanguage,
       spokenLanguage: targetLanguage,
-    };
-    
-    const result = await aiLanguagePartnerFlow(input);
+    });
 
+    let fullResponse = "";
+    for await (const chunk of stream) {
+        fullResponse += chunk;
+    }
+    
     // Clean up the response to remove potential quotes or extra phrases.
-    return result.response.trim().replace(/^"|"$/g, '');
+    return fullResponse.trim().replace(/^"|"$/g, '');
   } catch (error) {
     console.error("Error translating sentence:", error);
     throw new Error("Translation failed. Please try again.");
