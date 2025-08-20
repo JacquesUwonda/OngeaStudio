@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useRouter, notFound } from 'next/navigation';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -10,9 +10,9 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { generateStoryAction, translateSentenceAction } from '@/lib/actions';
+import { generateStoryAction, translateSentenceAction, textToSpeechAction } from '@/lib/actions';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, BookText, Sparkles, Info, ArrowLeft, Wand2, Library } from 'lucide-react';
+import { Loader2, BookText, Sparkles, Info, ArrowLeft, Wand2, Library, Volume2 } from 'lucide-react';
 import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useLanguage } from '@/contexts/language-context';
@@ -47,7 +47,7 @@ export default function GenerateStoryPage() {
   const params = useParams();
   const router = useRouter();
   const { toast } = useToast();
-  const { learningLanguage, spokenLanguage, getLanguageLabel } = useLanguage();
+  const { learningLanguage, spokenLanguage, getLanguageLabel, getLanguageTtsCode } = useLanguage();
   
   const domain = params.domain as string;
   const topic = (params.topic as string).replace(/-/g, ' ');
@@ -55,6 +55,11 @@ export default function GenerateStoryPage() {
   const [story, setStory] = useState<GeneratedStory | null>(null);
   const [sentences, setSentences] = useState<Sentence[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isReadingAloud, setIsReadingAloud] = useState(false);
+  
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [audioSrc, setAudioSrc] = useState<string | null>(null);
+
 
   const form = useForm<StoryFormValues>({
     resolver: zodResolver(storyFormSchema),
@@ -84,6 +89,11 @@ export default function GenerateStoryPage() {
   const onSubmit: SubmitHandler<StoryFormValues> = async (data) => {
     setIsLoading(true);
     setStory(null);
+    setAudioSrc(null);
+    if(audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+    }
     try {
       const fullInput: GenerateStoryInput = {
         ...data,
@@ -123,9 +133,35 @@ export default function GenerateStoryPage() {
       }
     }
   };
+  
+  const handleReadAloud = async () => {
+    if (!story) return;
+    setIsReadingAloud(true);
+
+    try {
+      const ttsCode = getLanguageTtsCode(learningLanguage);
+      const result = await textToSpeechAction({ text: story.story, languageCode: ttsCode });
+      setAudioSrc(result.audioDataUri);
+    } catch (error) {
+       toast({
+        title: 'Could not generate audio',
+        description: (error as Error).message || 'The text-to-speech service failed.',
+        variant: 'destructive',
+      });
+    } finally {
+        setIsReadingAloud(false);
+    }
+  };
+
+  useEffect(() => {
+    if (audioSrc && audioRef.current) {
+        audioRef.current.play().catch(e => console.error("Audio playback failed", e));
+    }
+  }, [audioSrc]);
 
   return (
     <div className="p-4 sm:p-6 lg:p-8">
+      {audioSrc && <audio ref={audioRef} src={audioSrc} />}
       {!story && (
         <header className="mb-10 text-center">
             <Badge variant="outline" className="mb-4 text-sm font-medium border-primary/50 text-primary">
@@ -263,11 +299,17 @@ export default function GenerateStoryPage() {
 
       {story && !isLoading && (
         <Card className="max-w-3xl mx-auto shadow-xl animate-in fade-in-50 duration-500">
-          <CardHeader>
-            <CardTitle className="font-headline text-3xl text-accent">{story.title}</CardTitle>
-            <CardDescription className="flex items-center gap-1.5 pt-2 text-base">
-              <Info size={16}/> Click a sentence to see its translation in {getLanguageLabel(spokenLanguage)}.
-            </CardDescription>
+          <CardHeader className="flex flex-row justify-between items-start">
+            <div>
+              <CardTitle className="font-headline text-3xl text-accent">{story.title}</CardTitle>
+              <CardDescription className="flex items-center gap-1.5 pt-2 text-base">
+                <Info size={16}/> Click a sentence to see its translation in {getLanguageLabel(spokenLanguage)}.
+              </CardDescription>
+            </div>
+            <Button variant="outline" size="lg" onClick={handleReadAloud} disabled={isReadingAloud}>
+              {isReadingAloud ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Volume2 className="mr-2 h-5 w-5" />}
+              Read Aloud
+            </Button>
           </CardHeader>
           <CardContent className="prose prose-lg max-w-none dark:prose-invert font-body leading-relaxed text-lg p-6 pt-0">
             {sentences.map((sentence) => (
@@ -309,7 +351,14 @@ export default function GenerateStoryPage() {
                         Back to Domains
                     </Link>
                 </Button>
-                <Button onClick={() => setStory(null)}>
+                <Button onClick={() => {
+                  setStory(null)
+                  setAudioSrc(null)
+                  if(audioRef.current) {
+                    audioRef.current.pause();
+                    audioRef.current.currentTime = 0;
+                  }
+                  }}>
                   <Sparkles className="mr-2 h-4 w-4" />
                   Generate Another Story
                 </Button>

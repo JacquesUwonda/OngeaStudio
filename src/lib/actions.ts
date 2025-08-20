@@ -4,6 +4,7 @@
 import { generateStory as generateStoryFlow, GenerateStoryInput, GenerateStoryOutput } from "@/ai/flows/generate-story";
 import { aiLanguagePartner as aiLanguagePartnerFlow, AiLanguagePartnerInput, AiLanguagePartnerOutput } from "@/ai/flows/ai-language-partner";
 import { generateFlashcards as generateFlashcardsFlow, GenerateFlashcardsInput, GenerateFlashcardsOutput as GenerateFlashcardsAIOutput } from "@/ai/flows/generate-flashcard-flow";
+import { textToSpeech as textToSpeechFlow, TextToSpeechInput, TextToSpeechOutput } from "@/ai/flows/text-to-speech";
 
 // Define the structure of a single flashcard item as expected by the frontend after processing
 export interface ProcessedFlashcard {
@@ -85,4 +86,17 @@ export async function generateFlashcardsAction(input: GenerateFlashcardsInput): 
     console.error("Error generating flashcard set:", error);
     throw new Error("Failed to generate flashcard set. Please try again.");
   }
+}
+
+export async function textToSpeechAction(input: TextToSpeechInput): Promise<TextToSpeechOutput> {
+    try {
+        const result = await textToSpeechFlow(input);
+        if (!result || !result.audioDataUri) {
+            throw new Error("AI failed to generate audio.");
+        }
+        return result;
+    } catch (error) {
+        console.error("Error in text-to-speech action:", error);
+        throw new Error("Failed to generate audio. Please try again.");
+    }
 }
