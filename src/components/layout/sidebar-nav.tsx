@@ -27,17 +27,14 @@ export function SidebarNav() {
     <SidebarMenu>
       {navItems.map((item) => (
         <SidebarMenuItem key={item.href}>
-          <Link href={item.href} passHref legacyBehavior>
+          <Link href={item.href} passHref asChild>
             <SidebarMenuButton
-              asChild
               isActive={pathname.startsWith(item.href) && (item.href !== "/dashboard" || pathname === "/dashboard")}
               tooltip={{ children: item.label, side: "right", align: "center" }}
               onClick={() => setOpenMobile(false)}
             >
-              <a>
-                <item.icon className="h-5 w-5" />
-                <span>{item.label}</span>
-              </a>
+              <item.icon className="h-5 w-5" />
+              <span>{item.label}</span>
             </SidebarMenuButton>
           </Link>
         </SidebarMenuItem>
