@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -29,7 +30,7 @@ export default function DashboardPage() {
   ];
 
   return (
-    <div className="py-8">
+    <div className="p-4 sm:p-6">
       <header className="mb-12 text-center">
         <h1 className="text-4xl font-bold font-headline text-primary mb-2">
           Welcome to Ongea!

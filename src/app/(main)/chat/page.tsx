@@ -109,7 +109,7 @@ export default function ChatPage() {
   const spokenLangLabel = getLanguageLabel(spokenLanguage);
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex-1 flex flex-col">
       <Card className="flex-1 flex flex-col shadow-lg rounded-none border-0 sm:border-x">
         <CardHeader className="border-b">
           <CardTitle className="font-headline text-2xl text-primary">AI Language Partner ({learningLangLabel})</CardTitle>

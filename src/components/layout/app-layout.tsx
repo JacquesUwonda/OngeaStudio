@@ -87,7 +87,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </SidebarFooter>
       </Sidebar>
       <SidebarInset className="flex flex-col flex-1">
-        <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b bg-background/80 px-4 backdrop-blur-md sm:px-6">
+        <header className="sticky top-0 z-50 flex h-16 items-center justify-between border-b bg-background/80 px-4 backdrop-blur-md sm:px-6">
           <div className="flex items-center">
             <SidebarTrigger className="md:hidden mr-2"/>
             {/* Placeholder for breadcrumbs or page title if needed */}
@@ -97,7 +97,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             {/* User avatar/menu could go here */}
           </div>
         </header>
-        <main className="flex-1 flex flex-col p-4 sm:p-6 overflow-auto">
+        <main className="flex-1 flex flex-col overflow-auto">
           {children}
         </main>
       </SidebarInset>

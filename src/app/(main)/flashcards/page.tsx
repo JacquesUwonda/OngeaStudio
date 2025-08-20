@@ -113,7 +113,7 @@ export default function FlashcardsPage() {
 
   if (isGenerating && currentFlashcards.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center h-full text-center p-4 space-y-8">
+      <div className="flex flex-col items-center justify-center h-full text-center p-4 sm:p-6 space-y-8">
         <Card className="w-full max-w-md p-8 shadow-xl">
           <CardHeader>
             <CardTitle className="text-3xl font-headline text-primary flex items-center justify-center">
@@ -131,7 +131,7 @@ export default function FlashcardsPage() {
   
   if (sessionCompleted && totalCards > 0) {
     return (
-      <div className="flex flex-col items-center justify-center h-full text-center p-4 space-y-8">
+      <div className="flex flex-col items-center justify-center h-full text-center p-4 sm:p-6 space-y-8">
         <Card className="w-full max-w-md p-8 shadow-xl">
           <CardHeader>
             <CardTitle className="text-3xl font-headline text-primary">Set Complete!</CardTitle>
@@ -152,7 +152,7 @@ export default function FlashcardsPage() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-start py-8 space-y-8">
+    <div className="flex flex-col items-center justify-start p-4 sm:p-6 space-y-8">
       <Card className="w-full max-w-md shadow-lg">
         <CardHeader>
           <CardTitle className="font-headline text-xl text-primary flex items-center">
