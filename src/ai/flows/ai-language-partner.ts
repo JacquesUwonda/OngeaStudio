@@ -47,14 +47,15 @@ When the user asks for grammar tips or explanations related to {{{learningLangua
 If the user sends a message in {{{learningLanguage}}} to practice:
 - You can offer corrections or brief feedback on their {{{learningLanguage}}} usage (explained in {{{spokenLanguage}}}).
 - Continue the main conversation flow in {{{spokenLanguage}}}.
-`
+
+User's message: {{{message}}}
+`,
 });
 
 
 async function* aiLanguagePartnerStream(input: AiLanguagePartnerInput): AiLanguagePartnerOutput {
     const {stream} = ai.generateStream({
         prompt: prompt.prompt,
-        history: [{role: 'user', content: [{text: input.message}]}],
         input: input,
     });
 
