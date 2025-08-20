@@ -19,6 +19,13 @@ interface DisplayedFlashcard extends ProcessedFlashcard {
   id: string;
 }
 
+const mapProcessedToDisplayed = (processedCard: ProcessedFlashcard, index: number): DisplayedFlashcard => {
+    return {
+      ...processedCard,
+      id: `generated-${Date.now()}-${index}`,
+    };
+  };
+
 export default function FlashcardsPage() {
   const { learningLanguage, spokenLanguage, getLanguageLabel } = useLanguage();
   const { toast } = useToast();
@@ -33,12 +40,6 @@ export default function FlashcardsPage() {
   const [sessionCompleted, setSessionCompleted] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
 
-  const mapProcessedToDisplayed = (processedCard: ProcessedFlashcard, index: number): DisplayedFlashcard => {
-    return {
-      ...processedCard,
-      id: `generated-${Date.now()}-${index}`,
-    };
-  };
   
   const fetchAndSetNewFlashcards = useCallback(async () => {
     setIsGenerating(true);
@@ -72,7 +73,7 @@ export default function FlashcardsPage() {
     } finally {
       setIsGenerating(false);
     }
-  }, [learningLanguage, spokenLanguage, getLanguageLabel, mapProcessedToDisplayed, toast, topic]);
+  }, [learningLanguage, spokenLanguage, getLanguageLabel, toast, topic]);
 
   useEffect(() => {
     fetchAndSetNewFlashcards();
@@ -165,12 +166,12 @@ export default function FlashcardsPage() {
   }
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8 flex flex-col items-center">
-      <header className="mb-6 text-center w-full max-w-md">
-        <h1 className="text-3xl font-bold font-headline text-primary capitalize">
+    <div className="flex flex-col items-center p-4 sm:p-6 lg:p-8">
+      <header className="mb-6 w-full max-w-md text-center">
+        <h1 className="text-3xl font-bold font-headline capitalize text-primary">
           Flashcards: {topic}
         </h1>
-        <p className="mt-1 text-muted-foreground">
+        <p className="text-muted-foreground mt-1">
           A new set of 20 cards is generated each time. Click "Generate New Set" to refresh.
         </p>
       </header>
