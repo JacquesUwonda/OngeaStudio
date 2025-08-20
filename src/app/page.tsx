@@ -42,7 +42,7 @@ export default function LandingPage() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <header className="px-4 lg:px-6 h-16 flex items-center shadow-sm">
+      <header className="sticky top-0 z-50 w-full border-b bg-background/95 px-4 backdrop-blur supports-[backdrop-filter]:bg-background/60 lg:px-6 h-16 flex items-center">
         <Link href="#" className="flex items-center justify-center" prefetch={false}>
           <BookHeart className="h-6 w-6 text-primary" />
           <span className="ml-2 text-lg font-semibold font-headline">Ongea</span>
