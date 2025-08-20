@@ -10,7 +10,6 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
-import {generateStream} from 'genkit/generate';
 
 const AiLanguagePartnerInputSchema = z.object({
   message: z.string().describe('The user message to the AI language partner.'),
@@ -27,7 +26,10 @@ export async function aiLanguagePartner(input: AiLanguagePartnerInput): Promise<
   return aiLanguagePartnerStream(input);
 }
 
-const prompt = `You are an AI language partner.
+const prompt = ai.definePrompt({
+    name: 'aiLanguagePartnerPrompt',
+    input: { schema: AiLanguagePartnerInputSchema },
+    prompt: `You are an AI language partner.
 The user is learning {{{learningLanguage}}} and their main language is {{{spokenLanguage}}}.
 
 Your primary goal is to help the user learn {{{learningLanguage}}}.
@@ -45,16 +47,15 @@ When the user asks for grammar tips or explanations related to {{{learningLangua
 If the user sends a message in {{{learningLanguage}}} to practice:
 - You can offer corrections or brief feedback on their {{{learningLanguage}}} usage (explained in {{{spokenLanguage}}}).
 - Continue the main conversation flow in {{{spokenLanguage}}}.
-
-User message: {{{message}}}
-`;
+`
+});
 
 
 async function* aiLanguagePartnerStream(input: AiLanguagePartnerInput): AiLanguagePartnerOutput {
     const {stream} = ai.generateStream({
-        prompt,
-        history: [], // If you want to maintain conversation history, you can add it here.
-        input,
+        prompt: prompt.prompt,
+        history: [{role: 'user', content: [{text: input.message}]}],
+        input: input,
     });
 
     for await (const chunk of stream) {
