@@ -1,6 +1,70 @@
-# Firebase Studio
+# Ongea - Your AI Language Learning Companion
 
-This is a NextJS starter in Firebase Studio.
+Ongea is a modern, AI-powered web application designed to help users learn new languages in an interactive and personalized way. It leverages generative AI to create dynamic learning materials, providing an engaging experience that goes beyond traditional methods.
 
-To get started, take a look at src/app/page.tsx.
-GitHub access token : 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
+## ✨ Key Features
+
+-   **Multi-Language Support**: Choose from a wide range of spoken and learning languages to tailor your experience. Your selections are saved locally for convenience.
+-   **AI-Generated Stories**: Generate beginner-friendly short stories on any topic in your target language. Click on any sentence to get an instant translation into your spoken language.
+-   **AI-Powered Flashcards**: Create sets of 20 flashcards automatically with common vocabulary for your chosen language pair. Practice with an interactive flip-card interface and listen to pronunciations.
+-   **AI Language Partner**: Practice conversation skills by chatting with an AI partner. It communicates primarily in your spoken language, providing translations and grammar explanations for the language you're learning upon request.
+-   **Modern, Responsive UI**: A clean and intuitive interface built with ShadCN UI and Tailwind CSS, featuring a collapsible sidebar and light/dark mode support.
+
+## 🚀 Tech Stack
+
+-   **Framework**: [Next.js](https://nextjs.org/) (with App Router)
+-   **Language**: [TypeScript](https://www.typescriptlang.org/)
+-   **AI Integration**: [Genkit (Google's Generative AI Toolkit)](https://firebase.google.com/docs/genkit)
+-   **AI Model**: [Google Gemini](https://deepmind.google/technologies/gemini/)
+-   **Styling**: [Tailwind CSS](https://tailwindcss.com/)
+-   **UI Components**: [ShadCN UI](https://ui.shadcn.com/)
+-   **State Management**: React Context API
+-   **Forms**: React Hook Form with Zod for validation
+
+## 🏁 Getting Started
+
+To get a local copy up and running, follow these simple steps.
+
+### Prerequisites
+
+-   Node.js (v18 or later recommended)
+-   npm, yarn, or pnpm
+
+### Installation & Setup
+
+1.  **Clone the repository:**
+    ```bash
+    git clone <your-repository-url>
+    ```
+2.  **Navigate to the project directory:**
+    ```bash
+    cd <project-directory>
+    ```
+3.  **Install dependencies:**
+    ```bash
+    npm install
+    ```
+4.  **Set up environment variables:**
+    Create a `.env` file in the root of your project and add your Google AI API key. You can get one from [Google AI Studio](https://aistudio.google.com/app/apikey).
+    ```.env
+    GEMINI_API_KEY=YOUR_API_KEY_HERE
+    ```
+
+### Running the Application
+
+1.  **Start the development server:**
+    ```bash
+    npm run dev
+    ```
+    This command runs the Next.js application in development mode with Turbopack for fast refresh.
+
+2.  Open [http://localhost:9002](http://localhost:9002) with your browser to see the result.
+
+## 📜 Available Scripts
+
+-   `npm run dev`: Starts the Next.js development server.
+-   `npm run build`: Builds the application for production.
+-   `npm run start`: Starts a production server.
+-   `npm run lint`: Runs the Next.js linter to identify and fix code quality issues.
+-   `npm run typecheck`: Runs the TypeScript compiler to check for type errors.
+-   `npm run genkit:dev`: Starts the Genkit development server to inspect and test flows.
