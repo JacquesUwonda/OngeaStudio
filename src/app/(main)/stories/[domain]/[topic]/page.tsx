@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { generateStoryAction, translateSentenceAction } from '@/lib/actions';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, BookText, Sparkles, Info, ArrowLeft, Wand2 } from 'lucide-react';
+import { Loader2, BookText, Sparkles, Info, ArrowLeft, Wand2, Library } from 'lucide-react';
 import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useLanguage } from '@/contexts/language-context';
@@ -302,7 +302,13 @@ export default function GenerateStoryPage() {
               </React.Fragment>
             ))}
           </CardContent>
-           <CardFooter className="bg-muted/40 p-4 flex justify-end">
+           <CardFooter className="bg-muted/40 p-4 flex justify-between">
+                <Button variant="outline" asChild>
+                    <Link href="/stories">
+                        <Library className="mr-2 h-4 w-4" />
+                        Back to Domains
+                    </Link>
+                </Button>
                 <Button onClick={() => setStory(null)}>
                   <Sparkles className="mr-2 h-4 w-4" />
                   Generate Another Story
