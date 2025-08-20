@@ -44,20 +44,29 @@ export async function aiLanguagePartnerAction(input: AiLanguagePartnerInput): Pr
 
 export async function translateSentenceAction(sentence: string, sourceLanguage: string, targetLanguage: string): Promise<string> {
   try {
-    const promptMessage = `Translate the following sentence from ${sourceLanguage} to ${targetLanguage} and provide ONLY the ${targetLanguage} translation: "${sentence}"`;
-    
+     // This prompt is more direct and less conversational, aiming for a pure translation.
+    const promptMessage = `Translate the following from ${sourceLanguage} to ${targetLanguage}. Return ONLY the translation, with no additional text or explanations.
+
+Sentence to translate: "${sentence}"`;
+
     const input: AiLanguagePartnerInput = {
       message: promptMessage,
-      learningLanguage: sourceLanguage, 
-      spokenLanguage: targetLanguage,   
+      // We can use the source and target languages directly here.
+      // The AI partner prompt is flexible enough to handle this direction.
+      learningLanguage: sourceLanguage,
+      spokenLanguage: targetLanguage,
     };
-    const result = await aiLanguagePartnerFlow(input);
-    return result.response.trim();
+    
+    const result = await aiLanguagepartnerFlow(input);
+
+    // Clean up the response to remove potential quotes or extra phrases.
+    return result.response.trim().replace(/^"|"$/g, '');
   } catch (error) {
     console.error("Error translating sentence:", error);
-    return "Translation failed.";
+    throw new Error("Translation failed. Please try again.");
   }
 }
+
 
 export async function generateFlashcardsAction(input: GenerateFlashcardsInput): Promise<GenerateFlashcardsActionOutput> {
   try {

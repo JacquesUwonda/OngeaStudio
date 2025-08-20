@@ -13,7 +13,11 @@ import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
 const GenerateStoryInputSchema = z.object({
-  topic: z.string().describe('The topic of the story to generate.'),
+  domain: z.string().describe("The broad category of the story (e.g., 'Technology', 'History')."),
+  topic: z.string().describe('The specific topic of the story to generate.'),
+  customTopic: z.string().optional().describe('A user-provided topic to override the selected one.'),
+  level: z.enum(['beginner', 'intermediate', 'advanced']).describe('The difficulty level of the story.'),
+  tone: z.enum(['informative', 'conversational', 'formal', 'creative', 'technical']).describe('The tone of the story.'),
   length: z
     .enum(['short', 'medium', 'long'])
     .describe('The desired length of the story.'),
@@ -36,20 +40,25 @@ const prompt = ai.definePrompt({
   name: 'generateStoryPrompt',
   input: {schema: GenerateStoryInputSchema},
   output: {schema: GenerateStoryOutputSchema},
-  prompt: `You are a helpful assistant skilled at creating beginner-friendly stories.
-  The user wants a story in {{{learningLanguage}}}. Their primary language is {{{spokenLanguage}}}.
+  prompt: `You are a helpful assistant skilled at creating stories for language learners.
+  The user's primary language is {{{spokenLanguage}}}, and they are learning {{{learningLanguage}}}.
 
-  Please generate a story based on the following topic: {{{topic}}}.
-  The story should be approximately {{length}} in length.
+  Your task is to generate a story in {{{learningLanguage}}}.
 
-  The story should be suitable for beginner learners of {{{learningLanguage}}}, using simple vocabulary and grammar.
-  Please provide the story and its title in {{{learningLanguage}}}.
-  Ensure the output is valid JSON.
+  Here are the user's preferences:
+  - Domain: {{{domain}}}
+  - Topic: {{#if customTopic}}{{{customTopic}}}{{else}}{{{topic}}}{{/if}}
+  - Desired Length: {{{length}}} (short: ~50-100 words, medium: ~150-250 words, long: ~300-400 words)
+  - Difficulty Level: {{{level}}}
+  - Tone: {{{tone}}}
 
-  Here are the valid values for length:
-  - short: approximately 50-100 words
-  - medium: approximately 150-250 words
-  - long: approximately 300-400 words
+  Please adhere to these rules:
+  1.  The story's content and title must be entirely in {{{learningLanguage}}}.
+  2.  The vocabulary and grammar must match the requested difficulty level ({{{level}}}). For 'beginner', use very simple sentence structures and common words. For 'advanced', you can use more complex grammar and richer vocabulary.
+  3.  The story must be relevant to the topic "{{#if customTopic}}{{{customTopic}}}{{else}}{{{topic}}}{{/if}}" within the "{{{domain}}}" domain.
+  4.  The writing style must reflect the chosen tone ({{{tone}}}).
+  5.  The total word count should be appropriate for the chosen length ({{{length}}}).
+  6.  Ensure the output is a valid JSON object with a "title" and a "story" field.
   `,
 });
 

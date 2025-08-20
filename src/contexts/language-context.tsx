@@ -7,15 +7,16 @@ export const availableLanguages = [
   { value: "en", label: "English", ttsCode: "en-US" },
   { value: "fr", label: "French", ttsCode: "fr-FR" },
   { value: "sw", label: "Swahili", ttsCode: "sw-KE" },
-  { value: "lin", label: "Lingala", ttsCode: "ln-CD" }, // Lingala (Congo Kinshasa)
+  { value: "lin", label: "Lingala", ttsCode: "ln-CD" },
   { value: "es", label: "Spanish", ttsCode: "es-ES" },
   { value: "de", label: "German", ttsCode: "de-DE" },
   { value: "it", label: "Italian", ttsCode: "it-IT" },
-  { value: "pt", label: "Portuguese", ttsCode: "pt-PT" }, // European Portuguese
+  { value: "pt", label: "Portuguese", ttsCode: "pt-PT" },
+  { value: "ru", label: "Russian", ttsCode: "ru-RU" },
+  { value: "ar", label: "Arabic", ttsCode: "ar-SA" },
   { value: "zh", label: "Mandarin Chinese", ttsCode: "zh-CN" },
   { value: "ja", label: "Japanese", ttsCode: "ja-JP" },
   { value: "ko", label: "Korean", ttsCode: "ko-KR" },
-  // Add more languages as needed
 ];
 
 export interface LanguageContextType {
@@ -78,4 +79,3 @@ export const useLanguage = (): LanguageContextType => {
   }
   return context;
 };
-
