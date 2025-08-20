@@ -152,7 +152,7 @@ export default function FlashcardsPage() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-start min-h-[calc(100vh-10rem)] p-4 space-y-8">
+    <div className="flex flex-col items-center justify-start py-8 space-y-8">
       <Card className="w-full max-w-md shadow-lg">
         <CardHeader>
           <CardTitle className="font-headline text-xl text-primary flex items-center">
