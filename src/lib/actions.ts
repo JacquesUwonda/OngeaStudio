@@ -57,7 +57,7 @@ Sentence to translate: "${sentence}"`;
       spokenLanguage: targetLanguage,
     };
     
-    const result = await aiLanguagepartnerFlow(input);
+    const result = await aiLanguagePartnerFlow(input);
 
     // Clean up the response to remove potential quotes or extra phrases.
     return result.response.trim().replace(/^"|"$/g, '');
