@@ -134,7 +134,7 @@ export default function StoriesPage() {
 
 
   return (
-    <div className="container mx-auto py-8">
+    <div className="py-8">
       <Card className="mb-8 shadow-lg">
         <CardHeader>
           <CardTitle className="font-headline text-2xl flex items-center text-primary">

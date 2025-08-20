@@ -29,7 +29,7 @@ export default function DashboardPage() {
   ];
 
   return (
-    <div className="container mx-auto py-8">
+    <div className="py-8">
       <header className="mb-12 text-center">
         <h1 className="text-4xl font-bold font-headline text-primary mb-2">
           Welcome to Ongea!
