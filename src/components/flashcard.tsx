@@ -1,17 +1,19 @@
 
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Volume2, RotateCcw } from "lucide-react";
+import { Volume2, RotateCcw, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/contexts/language-context";
+import { textToSpeechAction } from "@/lib/actions";
+import { useToast } from "@/hooks/use-toast";
+
 
 interface FlashcardProps {
   learningTerm: string;
   spokenTerm: string;
-  learningLangTTS: string; // e.g., "fr-FR"
-  spokenLangTTS: string;   // e.g., "en-US"
   onKnow: () => void;
   onDontKnow: () => void;
 }
@@ -19,13 +21,29 @@ interface FlashcardProps {
 export function Flashcard({
   learningTerm,
   spokenTerm,
-  learningLangTTS,
-  spokenLangTTS,
   onKnow,
   onDontKnow,
 }: FlashcardProps) {
   const [isFlipped, setIsFlipped] = useState(false);
   const [showButtons, setShowButtons] = useState(false);
+  
+  const { learningLanguage, spokenLanguage, getLanguageTtsCode } = useLanguage();
+  const { toast } = useToast();
+
+  const [audioSrc, setAudioSrc] = useState<string | null>(null);
+  const [isSpeaking, setIsSpeaking] = useState<"learning" | "spoken" | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    // Reset state when card changes
+    setIsFlipped(false);
+    setShowButtons(false);
+    setAudioSrc(null);
+    setIsSpeaking(null);
+    if(audioRef.current){
+      audioRef.current.pause();
+    }
+  }, [learningTerm, spokenTerm]);
 
   const handleFlip = () => {
     setIsFlipped(!isFlipped);
@@ -36,31 +54,47 @@ export function Flashcard({
   
   const handleNext = (knowIt: boolean) => {
     if (knowIt) onKnow(); else onDontKnow();
-    setIsFlipped(false);
-    setShowButtons(false);
   }
 
-  const speak = (text: string, lang: string) => {
-    if (typeof window !== 'undefined' && window.speechSynthesis) {
-      // Cancel any ongoing speech before starting a new one
-      speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = lang;
-      speechSynthesis.speak(utterance);
-    }
-  };
+  const speak = async (term: string, side: "learning" | "spoken") => {
+    if (isSpeaking) return;
+    setIsSpeaking(side);
 
-  // Reset flip state if terms change (e.g. new card loaded)
-  React.useEffect(() => {
-    setIsFlipped(false);
-    setShowButtons(false);
-  }, [learningTerm, spokenTerm]);
+    const langCode = side === 'learning' ? getLanguageTtsCode(learningLanguage) : getLanguageTtsCode(spokenLanguage);
+
+    try {
+        const result = await textToSpeechAction({ text: term, languageCode: langCode });
+        setAudioSrc(result.audioDataUri);
+    } catch(error) {
+         toast({
+            title: 'Could not generate audio',
+            description: (error as Error).message || 'The text-to-speech service failed.',
+            variant: 'destructive',
+        });
+        setIsSpeaking(null);
+    }
+  }
+
+  useEffect(() => {
+    if (audioSrc && audioRef.current) {
+        audioRef.current.play().catch(e => {
+            console.error("Audio playback failed", e);
+            setIsSpeaking(null);
+        });
+    }
+  }, [audioSrc]);
+
+  const onAudioEnded = () => {
+    setIsSpeaking(null);
+    setAudioSrc(null);
+  }
 
   return (
     <div className="w-full max-w-md mx-auto perspective">
+       {audioSrc && <audio ref={audioRef} src={audioSrc} onEnded={onAudioEnded} />}
       <Card
         className={cn(
-          "relative w-full h-64 rounded-xl shadow-xl transition-transform duration-700 preserve-3d cursor-pointer",
+          "relative w-full h-64 rounded-xl shadow-xl transition-transform duration-700 preserve-3d",
           isFlipped ? "rotate-y-180" : ""
         )}
         onClick={!showButtons ? handleFlip : undefined} 
@@ -79,10 +113,11 @@ export function Flashcard({
             variant="ghost"
             size="icon"
             className="absolute top-4 right-4"
-            onClick={(e) => { e.stopPropagation(); speak(learningTerm, learningLangTTS); }}
+            onClick={(e) => { e.stopPropagation(); speak(learningTerm, "learning"); }}
             aria-label={`Speak term in learning language: ${learningTerm}`}
+            disabled={!!isSpeaking}
           >
-            <Volume2 className="h-5 w-5" />
+            {isSpeaking === 'learning' ? <Loader2 className="h-5 w-5 animate-spin" /> : <Volume2 className="h-5 w-5" />}
           </Button>
         </div>
 
@@ -105,10 +140,11 @@ export function Flashcard({
             variant="ghost"
             size="icon"
             className="absolute top-4 right-4"
-            onClick={(e) => { e.stopPropagation(); speak(spokenTerm, spokenLangTTS); }}
+            onClick={(e) => { e.stopPropagation(); speak(spokenTerm, "spoken"); }}
             aria-label={`Speak term in spoken language: ${spokenTerm}`}
+            disabled={!!isSpeaking}
           >
-            <Volume2 className="h-5 w-5" />
+            {isSpeaking === 'spoken' ? <Loader2 className="h-5 w-5 animate-spin" /> : <Volume2 className="h-5 w-5" />}
           </Button>
            <Button
             variant="ghost"
@@ -139,4 +175,3 @@ export function Flashcard({
     </div>
   );
 }
-

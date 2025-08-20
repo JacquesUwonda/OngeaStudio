@@ -3,14 +3,13 @@
 
 import { generateStory as generateStoryFlow, GenerateStoryInput, GenerateStoryOutput } from "@/ai/flows/generate-story";
 import { aiLanguagePartner as aiLanguagePartnerFlow, AiLanguagePartnerInput, AiLanguagePartnerOutput } from "@/ai/flows/ai-language-partner";
-import { generateFlashcards as generateFlashcardsFlow, GenerateFlashcardsInput, GenerateFlashcardsOutput as GenerateFlashcardsAIOutput } from "@/ai/flows/generate-flashcard-flow";
+import { generateFlashcards as generateFlashcardsFlow, GenerateFlashcardsInput } from "@/ai/flows/generate-flashcard-flow";
 import { textToSpeech as textToSpeechFlow, TextToSpeechInput, TextToSpeechOutput } from "@/ai/flows/text-to-speech";
 
 // Define the structure of a single flashcard item as expected by the frontend after processing
 export interface ProcessedFlashcard {
   learningTerm: string;
   spokenTerm: string;
-  category?: string;
 }
 
 // Define the output type for the action, which is an array of these processed flashcards
@@ -75,12 +74,9 @@ export async function generateFlashcardsAction(input: GenerateFlashcardsInput): 
     if (!aiResult || !aiResult.flashcards || aiResult.flashcards.length === 0) {
       throw new Error("AI failed to generate valid flashcards.");
     }
-    // The AI flow already returns an array of objects with learningTerm, spokenTerm, category
-    // So, we can directly return aiResult.flashcards
     return aiResult.flashcards.map(fc => ({
         learningTerm: fc.learningTerm,
         spokenTerm: fc.spokenTerm,
-        category: fc.category,
     }));
   } catch (error) {
     console.error("Error generating flashcard set:", error);

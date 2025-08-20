@@ -14,13 +14,13 @@ import {z} from 'genkit';
 const GenerateFlashcardsInputSchema = z.object({
   learningLanguage: z.string().describe('The language the user is learning (e.g., "French", "Spanish").'),
   spokenLanguage: z.string().describe('The user primary language (e.g., "English").'),
+  topic: z.string().optional().describe('The topic for the flashcards (e.g., "Food", "Travel").'),
 });
 export type GenerateFlashcardsInput = z.infer<typeof GenerateFlashcardsInputSchema>;
 
 const FlashcardItemSchema = z.object({
   learningTerm: z.string().describe('The word or phrase in the learning language.'),
   spokenTerm: z.string().describe('The translation of the term in the spoken language.'),
-  category: z.string().optional().describe('A suggested category for the flashcard (e.g., "Food", "Travel", "Verbs").'),
 });
 
 const GenerateFlashcardsOutputSchema = z.object({
@@ -40,17 +40,19 @@ const prompt = ai.definePrompt({
 The user's spoken language is {{{spokenLanguage}}} and they are learning {{{learningLanguage}}}.
 
 Generate a list of 20 common, beginner-level words or short phrases in {{{learningLanguage}}}.
+{{#if topic}}
+The flashcards should be related to the topic: **{{{topic}}}**.
+{{/if}}
 For each word/phrase, provide its direct translation in {{{spokenLanguage}}}.
-Optionally, suggest a concise category for each flashcard (e.g., "Food", "Numbers", "Common Verbs", "Adjectives").
 
 Return ONLY a JSON object with a "flashcards" key, where the value is an array of 20 flashcard objects.
-Each flashcard object must have "learningTerm", "spokenTerm", and optionally "category".
+Each flashcard object must have "learningTerm" and "spokenTerm".
 
 Example structure for the output:
 {
   "flashcards": [
-    { "learningTerm": "le chat", "spokenTerm": "the cat", "category": "Animals" },
-    { "learningTerm": "manger", "spokenTerm": "to eat", "category": "Verbs" },
+    { "learningTerm": "le chat", "spokenTerm": "the cat" },
+    { "learningTerm": "manger", "spokenTerm": "to eat" },
     // ... 18 more flashcards
   ]
 }
@@ -71,4 +73,3 @@ const generateFlashcardsFlow = ai.defineFlow(
     return output;
   }
 );
-
