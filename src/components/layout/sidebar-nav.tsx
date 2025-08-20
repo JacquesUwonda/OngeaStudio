@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -8,6 +9,7 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
+  useSidebar,
 } from "@/components/ui/sidebar";
 
 const navItems = [
@@ -19,6 +21,7 @@ const navItems = [
 
 export function SidebarNav() {
   const pathname = usePathname();
+  const { setOpenMobile } = useSidebar();
 
   return (
     <SidebarMenu>
@@ -27,8 +30,9 @@ export function SidebarNav() {
           <Link href={item.href} passHref legacyBehavior>
             <SidebarMenuButton
               asChild
-              isActive={pathname === item.href}
+              isActive={pathname.startsWith(item.href) && (item.href !== "/dashboard" || pathname === "/dashboard")}
               tooltip={{ children: item.label, side: "right", align: "center" }}
+              onClick={() => setOpenMobile(false)}
             >
               <a>
                 <item.icon className="h-5 w-5" />
