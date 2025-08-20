@@ -27,7 +27,7 @@ export function SidebarNav() {
     <SidebarMenu>
       {navItems.map((item) => (
         <SidebarMenuItem key={item.href}>
-          <Link href={item.href} passHref asChild>
+          <Link href={item.href} asChild>
             <SidebarMenuButton
               isActive={pathname.startsWith(item.href) && (item.href !== "/dashboard" || pathname === "/dashboard")}
               tooltip={{ children: item.label, side: "right", align: "center" }}
