@@ -97,7 +97,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             {/* User avatar/menu could go here */}
           </div>
         </header>
-        <main className="flex-1 p-4 sm:p-6 overflow-auto">
+        <main className="flex-1 flex flex-col p-4 sm:p-6 overflow-auto">
           {children}
         </main>
       </SidebarInset>

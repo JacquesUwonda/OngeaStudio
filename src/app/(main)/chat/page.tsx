@@ -109,79 +109,77 @@ export default function ChatPage() {
   const spokenLangLabel = getLanguageLabel(spokenLanguage);
 
   return (
-    <div className="h-[calc(100vh-theme(spacing.16)_-_2px)] -m-4 sm:-m-6">
-      <div className="flex flex-col h-full">
-        <Card className="flex-1 flex flex-col shadow-lg rounded-none border-0 sm:border-x">
-          <CardHeader className="border-b">
-            <CardTitle className="font-headline text-2xl text-primary">AI Language Partner ({learningLangLabel})</CardTitle>
-          </CardHeader>
-          <CardContent className="flex-1 p-0 overflow-hidden">
-            <ScrollArea className="h-full p-6" ref={scrollAreaRef}>
-              <div className="space-y-6">
-                {messages.map((message) => (
-                  <div
-                    key={message.id}
-                    className={`flex items-end space-x-3 ${
-                      message.sender === "user" ? "justify-end" : ""
-                    }`}
-                  >
-                    {message.sender === "ai" && (
-                      <Avatar className="h-8 w-8 self-start">
-                        <AvatarFallback><Bot size={18}/></AvatarFallback>
-                      </Avatar>
-                    )}
-                    <div
-                      className={`max-w-xs lg:max-w-md p-3 rounded-lg shadow ${
-                        message.sender === "user"
-                          ? "bg-primary text-primary-foreground"
-                          : "bg-muted text-muted-foreground"
-                      }`}
-                    >
-                      <p className="text-sm whitespace-pre-wrap">{message.text}</p>
-                      <p className={`text-xs mt-1 ${message.sender === "user" ? "text-primary-foreground/70 text-right" : "text-muted-foreground/70"}`}>
-                        {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                      </p>
-                    </div>
-                    {message.sender === "user" && (
-                      <Avatar className="h-8 w-8 self-start">
-                        <AvatarFallback><User size={18} /></AvatarFallback>
-                      </Avatar>
-                    )}
-                  </div>
-                ))}
-                {isLoading && (
-                  <div className="flex items-end space-x-3">
+    <div className="flex flex-col h-full">
+      <Card className="flex-1 flex flex-col shadow-lg rounded-none border-0 sm:border-x">
+        <CardHeader className="border-b">
+          <CardTitle className="font-headline text-2xl text-primary">AI Language Partner ({learningLangLabel})</CardTitle>
+        </CardHeader>
+        <CardContent className="flex-1 p-0 overflow-hidden">
+          <ScrollArea className="h-full p-6" ref={scrollAreaRef}>
+            <div className="space-y-6">
+              {messages.map((message) => (
+                <div
+                  key={message.id}
+                  className={`flex items-end space-x-3 ${
+                    message.sender === "user" ? "justify-end" : ""
+                  }`}
+                >
+                  {message.sender === "ai" && (
                     <Avatar className="h-8 w-8 self-start">
                       <AvatarFallback><Bot size={18}/></AvatarFallback>
                     </Avatar>
-                    <div className="max-w-xs lg:max-w-md p-3 rounded-lg shadow bg-muted text-muted-foreground">
-                      <Loader2 className="h-5 w-5 animate-spin text-primary" />
-                    </div>
+                  )}
+                  <div
+                    className={`max-w-xs lg:max-w-md p-3 rounded-lg shadow ${
+                      message.sender === "user"
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-muted text-muted-foreground"
+                    }`}
+                  >
+                    <p className="text-sm whitespace-pre-wrap">{message.text}</p>
+                    <p className={`text-xs mt-1 ${message.sender === "user" ? "text-primary-foreground/70 text-right" : "text-muted-foreground/70"}`}>
+                      {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </p>
                   </div>
-                )}
-              </div>
-            </ScrollArea>
-          </CardContent>
-          <div className="border-t p-4 bg-background">
-            <form onSubmit={handleSendMessage} className="flex items-center space-x-3">
-              <Input
-                ref={inputRef}
-                type="text"
-                placeholder={`Chat in ${spokenLangLabel}, or ask about ${learningLangLabel}...`}
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                className="flex-1"
-                disabled={isLoading}
-                aria-label="Chat input"
-              />
-              <Button type="submit" size="icon" disabled={isLoading || !inputValue.trim()}>
-                {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
-                <span className="sr-only">Send message</span>
-              </Button>
-            </form>
-          </div>
-        </Card>
-      </div>
+                  {message.sender === "user" && (
+                    <Avatar className="h-8 w-8 self-start">
+                      <AvatarFallback><User size={18} /></AvatarFallback>
+                    </Avatar>
+                  )}
+                </div>
+              ))}
+              {isLoading && (
+                <div className="flex items-end space-x-3">
+                  <Avatar className="h-8 w-8 self-start">
+                    <AvatarFallback><Bot size={18}/></AvatarFallback>
+                  </Avatar>
+                  <div className="max-w-xs lg:max-w-md p-3 rounded-lg shadow bg-muted text-muted-foreground">
+                    <Loader2 className="h-5 w-5 animate-spin text-primary" />
+                  </div>
+                </div>
+              )}
+            </div>
+          </ScrollArea>
+        </CardContent>
+        <div className="border-t p-4 bg-background">
+          <form onSubmit={handleSendMessage} className="flex items-center space-x-3">
+            <Input
+              ref={inputRef}
+              type="text"
+              placeholder={`Chat in ${spokenLangLabel}, or ask about ${learningLangLabel}...`}
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              className="flex-1"
+              disabled={isLoading}
+              aria-label="Chat input"
+            />
+            <Button type="submit" size="icon" disabled={isLoading || !inputValue.trim()}>
+              {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
+              <span className="sr-only">Send message</span>
+            </Button>
+          </form>
+        </div>
+      </Card>
     </div>
   );
 }
