@@ -5,7 +5,6 @@ import { BookHeart, MessageCircle, Layers3, AudioWaveform, BotMessageSquare, Inf
 import Link from "next/link";
 import Image from "next/image";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Sheet, SheetTrigger, SheetContent } from "@/components/ui/sheet";
 
 export default function LandingPage() {
@@ -42,47 +41,6 @@ export default function LandingPage() {
     },
   ];
 
-  const testimonials = [
-      {
-          name: "Alex Johnson",
-          title: "Student",
-          quote: "Ongea has been a game-changer for my French classes. The AI stories are so much more engaging than textbooks, and I can actually remember the vocabulary!",
-          avatar: "https://placehold.co/100x100.png"
-      },
-      {
-          name: "Maria Garcia",
-          title: "World Traveler",
-          quote: "I used Ongea to pick up some basic Italian before my trip to Rome. The flashcards and chat feature were perfect for learning on the go. Highly recommended!",
-          avatar: "https://placehold.co/100x100.png"
-      },
-      {
-          name: "David Chen",
-          title: "Software Developer",
-          quote: "As a language enthusiast, I've tried many apps. Ongea's AI-powered approach is the most effective and personalized I've seen. The technology is impressive.",
-          avatar: "https://placehold.co/100x100.png"
-      },
-       {
-          name: "Sophie Dubois",
-          title: "Linguist",
-          quote: "The contextual learning through stories is brilliant. It's how language acquisition naturally works. A fantastic tool for any serious learner.",
-          avatar: "https://placehold.co/100x100.png"
-      },
-      {
-          name: "Kenichi Tanaka",
-          title: "Expat",
-          quote: "Moving to a new country was daunting, but Ongea helped me build the confidence to speak with locals. The AI chat partner is like having a patient friend to practice with.",
-          avatar: "https://placehold.co/100x100.png"
-      },
-      {
-          name: "Fatima Al-Sayed",
-          title: "Business Professional",
-          quote: "I needed to learn business Arabic quickly. The ability to generate flashcards for specific topics was incredibly useful and saved me hours of work.",
-          avatar: "https://placehold.co/100x100.png"
-      }
-  ];
-  
-  const duplicatedTestimonials = [...testimonials, ...testimonials];
-
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 px-4 backdrop-blur supports-[backdrop-filter]:bg-background/60 lg:px-6 h-16 flex items-center justify-between">
@@ -98,10 +56,7 @@ export default function LandingPage() {
                 <Link href="#how-it-works" className="text-sm font-medium hover:underline underline-offset-4" prefetch={false}>
                     How It Works
                 </Link>
-                <Link href="#testimonials" className="text-sm font-medium hover:underline underline-offset-4" prefetch={false}>
-                    Testimonials
-                </Link>
-                 <Link href="/signin" className="text-sm font-medium hover:underline underline-offset-4" prefetch={false}>
+                <Link href="/signin" className="text-sm font-medium hover:underline underline-offset-4" prefetch={false}>
                     Sign In
                 </Link>
                 <Button asChild>
@@ -128,9 +83,6 @@ export default function LandingPage() {
                             </Link>
                             <Link href="#how-it-works" className="text-base font-medium hover:underline underline-offset-4" prefetch={false}>
                                 How It Works
-                            </Link>
-                            <Link href="#testimonials" className="text-base font-medium hover:underline underline-offset-4" prefetch={false}>
-                                Testimonials
                             </Link>
                             <hr />
                             <Link href="/signin" className="text-base font-medium hover:underline underline-offset-4" prefetch={false}>
@@ -248,41 +200,6 @@ export default function LandingPage() {
             </div>
         </section>
 
-        {/* Testimonials Section */}
-        <section id="testimonials" className="w-full py-12 md:py-24 lg:py-32 bg-muted/40">
-            <div className="container px-4 md:px-6">
-                 <div className="flex flex-col items-center justify-center space-y-4 text-center">
-                    <div className="space-y-2">
-                        <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl font-headline">Loved by Learners Worldwide</h2>
-                        <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                            Don't just take our word for it. Here's what our users are saying about their journey with Ongea.
-                        </p>
-                    </div>
-                </div>
-            </div>
-            <div className="relative mt-12 w-full overflow-hidden">
-                <div className="flex animate-marquee-slow">
-                    {duplicatedTestimonials.map((testimonial, index) => (
-                        <Card key={index} className="flex flex-col justify-between p-6 shadow-md mx-4 min-w-[300px] md:min-w-[350px]">
-                            <CardContent className="p-0">
-                                <p className="text-muted-foreground mb-6">"{testimonial.quote}"</p>
-                            </CardContent>
-                            <CardHeader className="flex flex-row items-center gap-4 p-0">
-                                <Avatar>
-                                    <AvatarImage src={testimonial.avatar} alt={testimonial.name} data-ai-hint="person face" />
-                                    <AvatarFallback>{testimonial.name.charAt(0)}</AvatarFallback>
-                                </Avatar>
-                                <div>
-                                    <CardTitle className="text-base font-semibold">{testimonial.name}</CardTitle>
-                                    <p className="text-sm text-muted-foreground">{testimonial.title}</p>
-                                </div>
-                            </CardHeader>
-                        </Card>
-                    ))}
-                </div>
-            </div>
-        </section>
-
         {/* CTA Section */}
         <section className="w-full py-12 md:py-24 lg:py-32">
             <div className="container px-4 md:px-6">
@@ -350,5 +267,3 @@ export default function LandingPage() {
     </div>
   );
 }
-
-    
