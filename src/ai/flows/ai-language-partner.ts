@@ -54,7 +54,7 @@ User's message: {{{message}}}
 
 
 async function* aiLanguagePartnerStream(input: AiLanguagePartnerInput): AiLanguagePartnerOutput {
-    const {stream} = ai.generateStream({
+    const {stream} = await ai.generateStream({
         prompt: prompt.prompt,
         input: input,
     });
