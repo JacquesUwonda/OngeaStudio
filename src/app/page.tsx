@@ -1,7 +1,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { BookHeart, MessageCircle, Layers3, AudioWaveform, BotMessageSquare, Infinity, Languages, StepForward, Activity, Sparkles, Twitter, Github, Linkedin, Menu } from "lucide-react";
+import { BookHeart, MessageCircle, Layers3, AudioWaveform, BotMessageSquare, Infinity, Languages, Activity, Sparkles, Twitter, Github, Linkedin, Menu } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -60,7 +60,7 @@ export default function LandingPage() {
                     Sign In
                 </Link>
                 <Button asChild>
-                    <Link href="/dashboard">Get Started Free</Link>
+                    <Link href="/signup">Get Started Free</Link>
                 </Button>
             </nav>
             <ThemeToggle />
@@ -89,7 +89,7 @@ export default function LandingPage() {
                                 Sign In
                             </Link>
                             <Button asChild className="w-full">
-                                <Link href="/dashboard">Get Started Free</Link>
+                                <Link href="/signup">Get Started Free</Link>
                             </Button>
                         </div>
                     </SheetContent>
@@ -115,7 +115,7 @@ export default function LandingPage() {
                 </div>
                 <div className="flex flex-col gap-2 min-[400px]:flex-row">
                   <Button size="lg" asChild>
-                    <Link href="/dashboard">Start Learning for Free</Link>
+                    <Link href="/signup">Start Learning for Free</Link>
                   </Button>
                   <Button size="lg" variant="outline" asChild>
                     <Link href="#how-it-works">Learn More</Link>
@@ -211,7 +211,7 @@ export default function LandingPage() {
                         </p>
                         <div className="mt-6">
                             <Button size="lg" asChild>
-                                <Link href="/dashboard">
+                                <Link href="/signup">
                                     Start Learning Now
                                     <Sparkles className="ml-2 h-5 w-5" />
                                 </Link>
