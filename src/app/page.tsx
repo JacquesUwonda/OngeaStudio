@@ -1,11 +1,12 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { BookHeart, MessageCircle, Layers3, AudioWaveform, BotMessageSquare, Infinity, Languages, StepForward, Activity, Sparkles, Twitter, Github, Linkedin } from "lucide-react";
+import { BookHeart, MessageCircle, Layers3, AudioWaveform, BotMessageSquare, Infinity, Languages, StepForward, Activity, Sparkles, Twitter, Github, Linkedin, Menu } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Sheet, SheetTrigger, SheetContent } from "@/components/ui/sheet";
 
 export default function LandingPage() {
   const features = [
@@ -64,12 +65,12 @@ export default function LandingPage() {
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
-      <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 px-4 backdrop-blur supports-[backdrop-filter]:bg-background/60 lg:px-6 h-16 flex items-center">
+      <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 px-4 backdrop-blur supports-[backdrop-filter]:bg-background/60 lg:px-6 h-16 flex items-center justify-between">
         <Link href="#" className="flex items-center justify-center" prefetch={false}>
           <BookHeart className="h-6 w-6 text-primary" />
           <span className="ml-2 text-lg font-semibold font-headline">Ongea</span>
         </Link>
-        <nav className="ml-auto flex gap-4 sm:gap-6 items-center">
+        <nav className="ml-auto hidden md:flex gap-4 sm:gap-6 items-center">
           <Link href="#features" className="text-sm font-medium hover:underline underline-offset-4" prefetch={false}>
             Features
           </Link>
@@ -87,6 +88,43 @@ export default function LandingPage() {
             <Link href="/dashboard">Get Started Free</Link>
           </Button>
         </nav>
+        <div className="md:hidden">
+            <Sheet>
+                <SheetTrigger asChild>
+                    <Button variant="outline" size="icon">
+                        <Menu className="h-6 w-6" />
+                        <span className="sr-only">Open navigation menu</span>
+                    </Button>
+                </SheetTrigger>
+                <SheetContent side="right">
+                    <div className="grid gap-4 py-6">
+                         <Link href="#" className="flex items-center justify-center mb-4" prefetch={false}>
+                            <BookHeart className="h-6 w-6 text-primary" />
+                            <span className="ml-2 text-lg font-semibold font-headline">Ongea</span>
+                        </Link>
+                        <Link href="#features" className="text-base font-medium hover:underline underline-offset-4" prefetch={false}>
+                            Features
+                        </Link>
+                        <Link href="#how-it-works" className="text-base font-medium hover:underline underline-offset-4" prefetch={false}>
+                            How It Works
+                        </Link>
+                        <Link href="#testimonials" className="text-base font-medium hover:underline underline-offset-4" prefetch={false}>
+                            Testimonials
+                        </Link>
+                        <hr />
+                        <Link href="/signin" className="text-base font-medium hover:underline underline-offset-4" prefetch={false}>
+                            Sign In
+                        </Link>
+                        <Button asChild className="w-full">
+                            <Link href="/dashboard">Get Started Free</Link>
+                        </Button>
+                         <div className="mt-4 flex justify-center">
+                            <ThemeToggle />
+                        </div>
+                    </div>
+                </SheetContent>
+            </Sheet>
+        </div>
       </header>
 
       <main className="flex-1">
@@ -291,5 +329,3 @@ export default function LandingPage() {
     </div>
   );
 }
-
-    
