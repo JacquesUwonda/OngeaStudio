@@ -18,49 +18,34 @@ const AiLanguagePartnerInputSchema = z.object({
 });
 export type AiLanguagePartnerInput = z.infer<typeof AiLanguagePartnerInputSchema>;
 
-// The output is no longer a single object but a stream of strings
-export type AiLanguagePartnerOutput = AsyncGenerator<string>;
-
+export type AiLanguagePartnerOutput = string;
 
 export async function aiLanguagePartner(input: AiLanguagePartnerInput): Promise<AiLanguagePartnerOutput> {
-  return aiLanguagePartnerStream(input);
-}
+  const prompt = `You are an AI language partner.
+The user is learning ${input.learningLanguage} and their main language is ${input.spokenLanguage}.
 
-const prompt = ai.definePrompt({
-    name: 'aiLanguagePartnerPrompt',
-    input: { schema: AiLanguagePartnerInputSchema },
-    prompt: `You are an AI language partner.
-The user is learning {{{learningLanguage}}} and their main language is {{{spokenLanguage}}}.
-
-Your primary goal is to help the user learn {{{learningLanguage}}}.
-Converse with the user primarily in their **spoken language**: {{{spokenLanguage}}}.
+Your primary goal is to help the user learn ${input.learningLanguage}.
+Converse with the user primarily in their **spoken language**: ${input.spokenLanguage}.
 
 When the user asks for a translation of a word or phrase:
-- If they provide text in {{{learningLanguage}}}, translate it to {{{spokenLanguage}}}.
-- If they provide text in {{{spokenLanguage}}}, translate it to {{{learningLanguage}}}.
-Provide the translation directly, explained in {{{spokenLanguage}}}.
+- If they provide text in ${input.learningLanguage}, translate it to ${input.spokenLanguage}.
+- If they provide text in ${input.spokenLanguage}, translate it to ${input.learningLanguage}.
+Provide the translation directly, explained in ${input.spokenLanguage}.
 
-When the user asks for grammar tips or explanations related to {{{learningLanguage}}}:
-- Provide clear and concise explanations in {{{spokenLanguage}}}.
-- You should use examples in {{{learningLanguage}}} to illustrate the grammar points.
+When the user asks for grammar tips or explanations related to ${input.learningLanguage}:
+- Provide clear and concise explanations in ${input.spokenLanguage}.
+- You should use examples in ${input.learningLanguage} to illustrate the grammar points.
 
-If the user sends a message in {{{learningLanguage}}} to practice:
-- You can offer corrections or brief feedback on their {{{learningLanguage}}} usage (explained in {{{spokenLanguage}}}).
-- Continue the main conversation flow in {{{spokenLanguage}}}.
+If the user sends a message in ${input.learningLanguage} to practice:
+- You can offer corrections or brief feedback on their ${input.learningLanguage} usage (explained in ${input.spokenLanguage}).
+- Continue the main conversation flow in ${input.spokenLanguage}.
 
-User's message: {{{message}}}
-`,
-});
+User's message: ${input.message}
+`;
 
+  const { text } = await ai.generate({
+    prompt: prompt,
+  });
 
-async function* aiLanguagePartnerStream(input: AiLanguagePartnerInput): AiLanguagePartnerOutput {
-    const renderedPrompt = await prompt(input);
-
-    const {stream} = await ai.generateStream({
-        prompt: renderedPrompt.prompt,
-    });
-
-    for await (const chunk of stream) {
-        yield chunk.text;
-    }
+  return text;
 }

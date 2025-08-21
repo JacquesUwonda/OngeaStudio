@@ -31,8 +31,13 @@ export async function generateStoryAction(input: GenerateStoryInput): Promise<Ge
 }
 
 export async function aiLanguagePartnerAction(input: AiLanguagePartnerInput): Promise<AiLanguagePartnerOutput> {
-    // This action now returns the async generator directly
-    return aiLanguagePartnerFlow(input);
+    try {
+        const response = await aiLanguagePartnerFlow(input);
+        return response;
+    } catch (error) {
+        console.error("Error in AI language partner action:", error);
+        throw new Error("Failed to get response from AI. Please try again.");
+    }
 }
 
 

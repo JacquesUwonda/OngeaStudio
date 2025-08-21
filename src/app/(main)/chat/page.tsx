@@ -69,10 +69,6 @@ export default function ChatPage() {
     setInputValue("");
     setIsLoading(true);
 
-    // Add a placeholder for the AI response
-    const aiMessageId = `ai-${Date.now()}`;
-    setMessages((prev) => [...prev, { id: aiMessageId, text: "", sender: "ai" }]);
-
     try {
       const aiInput: AiLanguagePartnerInput = {
         message: userMessage.text,
@@ -80,29 +76,27 @@ export default function ChatPage() {
         spokenLanguage: getLanguageLabel(spokenLanguage),
       };
 
-      const stream = await aiLanguagePartnerAction(aiInput);
+      const response = await aiLanguagePartnerAction(aiInput);
 
-      for await (const chunk of stream) {
-        setMessages((prev) =>
-          prev.map((msg) =>
-            msg.id === aiMessageId ? { ...msg, text: msg.text + chunk } : msg
-          )
-        );
-      }
+      const aiMessage: Message = {
+        id: `ai-${Date.now()}`,
+        text: response,
+        sender: "ai",
+      };
+      setMessages((prev) => [...prev, aiMessage]);
+
     } catch (error) {
-      toast({
+       toast({
         title: "Error",
         description: (error as Error).message || "Could not get response from AI.",
         variant: "destructive",
       });
-      // Update the placeholder with an error message
-      setMessages((prev) =>
-        prev.map((msg) =>
-          msg.id === aiMessageId
-            ? { ...msg, text: "Sorry, I couldn't process your request. Please try again." }
-            : msg
-        )
-      );
+       const aiMessage: Message = {
+        id: `ai-${Date.now()}`,
+        text: "Sorry, I couldn't process your request. Please try again.",
+        sender: "ai",
+      };
+      setMessages((prev) => [...prev, aiMessage]);
     } finally {
       setIsLoading(false);
       inputRef.current?.focus();
@@ -143,10 +137,10 @@ export default function ChatPage() {
                       : "bg-muted text-muted-foreground rounded-bl-none"
                   }`}
                 >
-                  {message.text ? (
-                     <p className="text-sm sm:text-base whitespace-pre-wrap">{message.text}</p>
+                  {isLoading && message.sender === 'ai' && index === messages.length -1 ? (
+                     <Loader2 className="h-5 w-5 animate-spin text-primary" />
                   ) : (
-                    <Loader2 className="h-5 w-5 animate-spin text-primary" />
+                     <p className="text-sm sm:text-base whitespace-pre-wrap">{message.text}</p>
                   )}
                 </div>
 
@@ -159,6 +153,18 @@ export default function ChatPage() {
                 )}
               </div>
             ))}
+             {isLoading && (
+              <div className="flex items-start gap-4">
+                <Avatar className="h-9 w-9 border-2 border-primary/50">
+                  <AvatarFallback className="bg-primary/20 text-primary">
+                    <Bot size={20} />
+                  </AvatarFallback>
+                </Avatar>
+                <div className="max-w-xl rounded-2xl px-4 py-3 shadow-md bg-muted text-muted-foreground rounded-bl-none">
+                  <Loader2 className="h-5 w-5 animate-spin text-primary" />
+                </div>
+              </div>
+            )}
           </div>
         </ScrollArea>
       </div>
