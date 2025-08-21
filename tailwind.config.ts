@@ -1,3 +1,4 @@
+
 import type {Config} from 'tailwindcss';
 
 export default {
@@ -88,20 +89,15 @@ export default {
             height: '0',
           },
         },
-        'flip-y': {
-          '0%': { transform: 'rotateY(0deg)' },
-          '100%': { transform: 'rotateY(180deg)' },
+        'marquee-slow': {
+          from: { transform: 'translateX(0)' },
+          to: { transform: 'translateX(-50%)' },
         },
-        'flip-y-revert': {
-          '0%': { transform: 'rotateY(180deg)' },
-          '100%': { transform: 'rotateY(0deg)' },
-        }
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
-        'flip-y': 'flip-y 0.6s ease-in-out',
-        'flip-y-revert': 'flip-y-revert 0.6s ease-in-out',
+        'marquee-slow': 'marquee-slow 40s linear infinite',
       },
     },
   },
