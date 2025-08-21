@@ -5,6 +5,7 @@ import { generateStory as generateStoryFlow, GenerateStoryInput, GenerateStoryOu
 import { aiLanguagePartner as aiLanguagePartnerFlow, AiLanguagePartnerInput, AiLanguagePartnerOutput } from "@/ai/flows/ai-language-partner";
 import { generateFlashcards as generateFlashcardsFlow, GenerateFlashcardsInput } from "@/ai/flows/generate-flashcard-flow";
 import { textToSpeech as textToSpeechFlow, TextToSpeechInput, TextToSpeechOutput } from "@/ai/flows/text-to-speech";
+import { ai } from "@/ai/genkit";
 
 // Define the structure of a single flashcard item as expected by the frontend after processing
 export interface ProcessedFlashcard {
@@ -37,25 +38,18 @@ export async function aiLanguagePartnerAction(input: AiLanguagePartnerInput): Pr
 
 export async function translateSentenceAction(sentence: string, sourceLanguage: string, targetLanguage: string): Promise<string> {
   try {
-    const promptMessage = `Translate the following from ${sourceLanguage} to ${targetLanguage}. Return ONLY the translation, with no additional text or explanations.
+    const prompt = `Translate the following from ${sourceLanguage} to ${targetLanguage}.
+Do not add any extra commentary, conversation, or explanation.
+Return ONLY the translated text.
 
 Sentence to translate: "${sentence}"`;
 
-    // The streaming partner flow expects an async generator.
-    // For this specific, non-conversational task, we'll iterate through the stream and collect the full response.
-    const stream = await aiLanguagePartnerFlow({
-      message: promptMessage,
-      learningLanguage: sourceLanguage,
-      spokenLanguage: targetLanguage,
+    const { text } = await ai.generate({
+      prompt: prompt,
     });
-
-    let fullResponse = "";
-    for await (const chunk of stream) {
-        fullResponse += chunk;
-    }
     
     // Clean up the response to remove potential quotes or extra phrases.
-    return fullResponse.trim().replace(/^"|"$/g, '');
+    return text.trim().replace(/^"|"$/g, '');
   } catch (error) {
     console.error("Error translating sentence:", error);
     throw new Error("Translation failed. Please try again.");
