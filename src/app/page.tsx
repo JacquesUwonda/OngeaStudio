@@ -70,60 +70,59 @@ export default function LandingPage() {
           <BookHeart className="h-6 w-6 text-primary" />
           <span className="ml-2 text-lg font-semibold font-headline">Ongea</span>
         </Link>
-        <nav className="ml-auto hidden md:flex gap-4 sm:gap-6 items-center">
-          <Link href="#features" className="text-sm font-medium hover:underline underline-offset-4" prefetch={false}>
-            Features
-          </Link>
-           <Link href="#how-it-works" className="text-sm font-medium hover:underline underline-offset-4" prefetch={false}>
-            How It Works
-          </Link>
-          <Link href="#testimonials" className="text-sm font-medium hover:underline underline-offset-4" prefetch={false}>
-            Testimonials
-          </Link>
-          <Link href="/signin" className="text-sm font-medium hover:underline underline-offset-4" prefetch={false}>
-            Sign In
-          </Link>
-          <ThemeToggle />
-          <Button asChild>
-            <Link href="/dashboard">Get Started Free</Link>
-          </Button>
-        </nav>
-        <div className="md:hidden">
-            <Sheet>
-                <SheetTrigger asChild>
-                    <Button variant="outline" size="icon">
-                        <Menu className="h-6 w-6" />
-                        <span className="sr-only">Open navigation menu</span>
-                    </Button>
-                </SheetTrigger>
-                <SheetContent side="right">
-                    <div className="grid gap-4 py-6">
-                         <Link href="#" className="flex items-center justify-center mb-4" prefetch={false}>
-                            <BookHeart className="h-6 w-6 text-primary" />
-                            <span className="ml-2 text-lg font-semibold font-headline">Ongea</span>
-                        </Link>
-                        <Link href="#features" className="text-base font-medium hover:underline underline-offset-4" prefetch={false}>
-                            Features
-                        </Link>
-                        <Link href="#how-it-works" className="text-base font-medium hover:underline underline-offset-4" prefetch={false}>
-                            How It Works
-                        </Link>
-                        <Link href="#testimonials" className="text-base font-medium hover:underline underline-offset-4" prefetch={false}>
-                            Testimonials
-                        </Link>
-                        <hr />
-                        <Link href="/signin" className="text-base font-medium hover:underline underline-offset-4" prefetch={false}>
-                            Sign In
-                        </Link>
-                        <Button asChild className="w-full">
-                            <Link href="/dashboard">Get Started Free</Link>
+        <div className="flex items-center gap-4">
+            <nav className="ml-auto hidden md:flex gap-4 sm:gap-6 items-center">
+                <Link href="#features" className="text-sm font-medium hover:underline underline-offset-4" prefetch={false}>
+                    Features
+                </Link>
+                <Link href="#how-it-works" className="text-sm font-medium hover:underline underline-offset-4" prefetch={false}>
+                    How It Works
+                </Link>
+                <Link href="#testimonials" className="text-sm font-medium hover:underline underline-offset-4" prefetch={false}>
+                    Testimonials
+                </Link>
+                <Link href="/signin" className="text-sm font-medium hover:underline underline-offset-4" prefetch={false}>
+                    Sign In
+                </Link>
+                <Button asChild>
+                    <Link href="/dashboard">Get Started Free</Link>
+                </Button>
+            </nav>
+            <ThemeToggle />
+            <div className="md:hidden">
+                <Sheet>
+                    <SheetTrigger asChild>
+                        <Button variant="outline" size="icon">
+                            <Menu className="h-6 w-6" />
+                            <span className="sr-only">Open navigation menu</span>
                         </Button>
-                         <div className="mt-4 flex justify-center">
-                            <ThemeToggle />
+                    </SheetTrigger>
+                    <SheetContent side="right">
+                        <div className="grid gap-4 py-6">
+                            <Link href="#" className="flex items-center justify-center mb-4" prefetch={false}>
+                                <BookHeart className="h-6 w-6 text-primary" />
+                                <span className="ml-2 text-lg font-semibold font-headline">Ongea</span>
+                            </Link>
+                            <Link href="#features" className="text-base font-medium hover:underline underline-offset-4" prefetch={false}>
+                                Features
+                            </Link>
+                            <Link href="#how-it-works" className="text-base font-medium hover:underline underline-offset-4" prefetch={false}>
+                                How It Works
+                            </Link>
+                            <Link href="#testimonials" className="text-base font-medium hover:underline underline-offset-4" prefetch={false}>
+                                Testimonials
+                            </Link>
+                            <hr />
+                            <Link href="/signin" className="text-base font-medium hover:underline underline-offset-4" prefetch={false}>
+                                Sign In
+                            </Link>
+                            <Button asChild className="w-full">
+                                <Link href="/dashboard">Get Started Free</Link>
+                            </Button>
                         </div>
-                    </div>
-                </SheetContent>
-            </Sheet>
+                    </SheetContent>
+                </Sheet>
+            </div>
         </div>
       </header>
 
@@ -310,8 +309,8 @@ export default function LandingPage() {
                     </div>
                     <div className="flex flex-col gap-3">
                         <h3 className="font-semibold">Company</h3>
-                        <Link href="#" className="text-sm text-muted-foreground hover:text-primary" prefetch={false}>About Us</Link>
-                        <Link href="#" className="text-sm text-muted-foreground hover:text-primary" prefetch={false}>Blog</Link>
+                        <Link href="#" className="text-sm text-muted-foreground hovertext-primary" prefetch={false}>About Us</Link>
+                        <Link href="#" className="text-sm text-muted-foreground hovertext-primary" prefetch={false}>Blog</Link>
                         <Link href="#" className="text-sm text-muted-foreground hover:text-primary" prefetch={false}>Contact</Link>
                     </div>
                     <div className="flex flex-col gap-3">
@@ -329,3 +328,5 @@ export default function LandingPage() {
     </div>
   );
 }
+
+    
