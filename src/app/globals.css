@@ -12,78 +12,78 @@ body {
 
 @layer base {
   :root {
-    --background: 206 100% 97%; /* #F0F8FF - Very Light Blue */
-    --foreground: 220 25% 25%; /* Darker blue/grey for text */
-    --card: 206 100% 97%;
-    --card-foreground: 220 25% 25%;
-    --popover: 206 100% 97%;
-    --popover-foreground: 220 25% 25%;
-    --primary: 203 72% 83%; /* #A7D1ED - Light Pastel Blue */
-    --primary-foreground: 203 72% 20%; /* Darker variant of primary for text */
-    --secondary: 206 60% 92%; /* Lighter blue */
-    --secondary-foreground: 203 72% 20%;
-    --muted: 206 50% 90%;
-    --muted-foreground: 220 20% 45%;
-    --accent: 255 100% 87%; /* #D0BFFF - Pale Lavender */
-    --accent-foreground: 255 100% 25%; /* Darker variant of accent for text */
-    --destructive: 0 84.2% 60.2%;
+    --background: 48 33% 94%; /* #f5f2e9 - Soft Beige/Cream */
+    --foreground: 120 25% 15%; /* #1e301e - Dark Forest Green */
+    --card: 48 33% 94%;
+    --card-foreground: 120 25% 15%;
+    --popover: 48 33% 94%;
+    --popover-foreground: 120 25% 15%;
+    --primary: 130 40% 50%; /* #4d995a - Calming Medium Green */
+    --primary-foreground: 130 40% 95%; /* Very light green/white for text */
+    --secondary: 130 30% 90%; /* #e0ebe2 - Light muted green */
+    --secondary-foreground: 120 25% 15%;
+    --muted: 130 20% 88%; /* #dce4dd */
+    --muted-foreground: 120 20% 45%; /* #637863 */
+    --accent: 45 65% 60%; /* #d4af51 - Warm Gold/Ochre */
+    --accent-foreground: 45 65% 15%; /* Darker variant of accent for text */
+    --destructive: 0 72% 51%; /* #e54848 */
     --destructive-foreground: 0 0% 98%;
-    --border: 203 50% 88%;
-    --input: 203 50% 90%;
-    --ring: 203 72% 83%;
-    --chart-1: 203 72% 60%;
-    --chart-2: 255 80% 70%;
+    --border: 130 20% 85%; /* #d5e0d7 */
+    --input: 130 20% 88%; /* #dce4dd */
+    --ring: 130 40% 50%;
+    --chart-1: 130 40% 50%;
+    --chart-2: 45 65% 60%;
     --chart-3: 180 70% 50%;
-    --chart-4: 43 74% 66%;
+    --chart-4: 30 74% 66%;
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
 
     /* Sidebar specific colors for light theme */
-    --sidebar-background: 206 80% 95%; /* Slightly darker than main background */
-    --sidebar-foreground: 220 25% 25%;
-    --sidebar-primary: 203 72% 83%; 
-    --sidebar-primary-foreground: 203 72% 20%;
-    --sidebar-accent: 255 100% 87%;
-    --sidebar-accent-foreground: 255 100% 25%;
-    --sidebar-border: 203 50% 88%;
-    --sidebar-ring: 203 72% 83%;
+    --sidebar-background: 130 25% 96%; /* Slightly greener than main background */
+    --sidebar-foreground: 120 25% 15%;
+    --sidebar-primary: 130 40% 50%;
+    --sidebar-primary-foreground: 130 40% 95%;
+    --sidebar-accent: 45 65% 60%;
+    --sidebar-accent-foreground: 45 65% 15%;
+    --sidebar-border: 130 20% 85%;
+    --sidebar-ring: 130 40% 50%;
   }
 
   .dark {
-    --background: 220 20% 10%; /* Dark blue-grey */
-    --foreground: 210 30% 90%; /* Light grey */
-    --card: 220 20% 10%;
-    --card-foreground: 210 30% 90%;
-    --popover: 220 20% 10%;
-    --popover-foreground: 210 30% 90%;
-    --primary: 203 50% 55%; /* Muted blue */
-    --primary-foreground: 203 50% 95%; /* Very light blue for text on primary */
-    --secondary: 220 20% 15%; /* Darker secondary */
-    --secondary-foreground: 210 30% 90%;
-    --muted: 220 20% 15%;
-    --muted-foreground: 210 30% 60%;
-    --accent: 255 60% 70%; /* Muted lavender */
-    --accent-foreground: 255 60% 15%; /* Darker text for dark accent */
-    --destructive: 0 62.8% 30.6%;
+    --background: 120 15% 10%; /* #141a14 - Very Dark Desaturated Green */
+    --foreground: 120 10% 85%; /* #d6d9d6 - Light Grey-Green */
+    --card: 120 15% 12%; /* #1a211a */
+    --card-foreground: 120 10% 85%;
+    --popover: 120 15% 10%;
+    --popover-foreground: 120 10% 85%;
+    --primary: 130 40% 50%; /* #4d995a - Same Medium Green */
+    --primary-foreground: 130 40% 95%;
+    --secondary: 120 15% 15%; /* #212921 */
+    --secondary-foreground: 120 10% 85%;
+    --muted: 120 15% 15%;
+    --muted-foreground: 120 10% 60%; /* #939993 */
+    --accent: 45 65% 60%; /* #d4af51 - Same Gold/Ochre Accent */
+    --accent-foreground: 45 65% 15%;
+    --destructive: 0 63% 31%; /* #9a2b2b */
     --destructive-foreground: 0 0% 98%;
-    --border: 220 20% 20%;
-    --input: 220 20% 22%;
-    --ring: 203 50% 55%;
-    --chart-1: 203 50% 60%;
-    --chart-2: 255 60% 70%;
+    --border: 120 10% 25%; /* #3a423a */
+    --input: 120 10% 28%; /* #424a42 */
+    --ring: 130 40% 50%;
+    --chart-1: 130 40% 50%;
+    --chart-2: 45 65% 60%;
     --chart-3: 180 50% 60%;
-    --chart-4: 43 60% 60%;
+    --chart-4: 30 60% 60%;
     --chart-5: 27 70% 60%;
 
     /* Sidebar specific colors for dark theme */
-    --sidebar-background: 220 20% 8%; /* Even darker for sidebar */
-    --sidebar-foreground: 210 30% 90%;
-    --sidebar-primary: 203 50% 55%;
-    --sidebar-primary-foreground: 203 50% 95%;
-    --sidebar-accent: 255 60% 70%;
-    --sidebar-accent-foreground: 255 60% 15%;
-    --sidebar-border: 220 20% 20%;
-    --sidebar-ring: 203 50% 55%;
+    --sidebar-background: 120 15% 8%; /* Even darker for sidebar */
+    --sidebar-foreground: 120 10% 85%;
+    --sidebar-primary: 130 40% 50%;
+    --sidebar-primary-foreground: 130 40% 95%;
+    --sidebar-accent: 45 65% 60%;
+    --sidebar-accent-foreground: 45 65% 15%;
+    --sidebar-border: 120 10% 25%;
+    --sidebar-ring: 130 40% 50%;
   }
 }
 
