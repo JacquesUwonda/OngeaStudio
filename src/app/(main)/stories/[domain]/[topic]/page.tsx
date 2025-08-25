@@ -248,7 +248,7 @@ export default function GenerateStoryPage() {
                       <FormLabel>Custom Topic (Optional)</FormLabel>
                       <FormControl>
                         <Textarea
-                          placeholder={`e.g., "The future of AI in healthcare" (Overrides "${topic}")`}
+                          placeholder={`e.g., "A dog who wants to become a chef" (Overrides "${topic}")`}
                           className="resize-none"
                           {...field}
                         />
