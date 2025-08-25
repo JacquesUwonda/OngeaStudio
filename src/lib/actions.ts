@@ -5,6 +5,7 @@ import { generateStory as generateStoryFlow, GenerateStoryInput, GenerateStoryOu
 import { aiLanguagePartner as aiLanguagePartnerFlow, AiLanguagePartnerInput, AiLanguagePartnerOutput } from "@/ai/flows/ai-language-partner";
 import { generateFlashcards as generateFlashcardsFlow, GenerateFlashcardsInput } from "@/ai/flows/generate-flashcard-flow";
 import { textToSpeech as textToSpeechFlow, TextToSpeechInput, TextToSpeechOutput } from "@/ai/flows/text-to-speech";
+import { rolePlayingScenario as rolePlayingScenarioFlow, RolePlayingScenarioInput, RolePlayingScenarioOutput } from "@/ai/flows/role-playing-scenario";
 import { ai } from "@/ai/genkit";
 
 // Define the structure of a single flashcard item as expected by the frontend after processing
@@ -88,5 +89,15 @@ export async function textToSpeechAction(input: TextToSpeechInput): Promise<Text
     } catch (error) {
         console.error("Error in text-to-speech action:", error);
         throw new Error("Failed to generate audio. Please try again.");
+    }
+}
+
+export async function rolePlayingScenarioAction(input: RolePlayingScenarioInput): Promise<RolePlayingScenarioOutput> {
+    try {
+        const response = await rolePlayingScenarioFlow(input);
+        return response;
+    } catch (error) {
+        console.error("Error in AI role-playing scenario action:", error);
+        throw new Error("Failed to get response from AI character. Please try again.");
     }
 }
