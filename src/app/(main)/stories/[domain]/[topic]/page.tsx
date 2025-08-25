@@ -305,7 +305,7 @@ export default function GenerateStoryPage() {
                     <Info size={16}/> Click a sentence to see its translation in {getLanguageLabel(spokenLanguage)}.
                   </CardDescription>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex flex-col sm:flex-row gap-2">
                   <Button variant="outline" size="lg" onClick={handleReadAloud} disabled={isReadingAloud}>
                     {isReadingAloud ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Volume2 className="mr-2 h-5 w-5" />}
                     Read Aloud
