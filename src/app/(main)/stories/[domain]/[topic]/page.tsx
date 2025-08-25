@@ -12,15 +12,16 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { generateStoryAction, translateSentenceAction, textToSpeechAction } from '@/lib/actions';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, BookText, Sparkles, Info, ArrowLeft, Wand2, Library, Volume2 } from 'lucide-react';
+import { Loader2, BookText, Sparkles, Info, ArrowLeft, Wand2, Library, Volume2, MessageSquare } from 'lucide-react';
 import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useLanguage } from '@/contexts/language-context';
-import type { GenerateStoryInput } from '@/ai/flows/generate-story';
+import type { GenerateStoryInput, GeneratedStory } from '@/ai/flows/generate-story';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
+import { LivingStoryChat } from '@/components/living-story-chat';
 
 const storyFormSchema = z.object({
   level: z.enum(['beginner', 'intermediate', 'advanced']),
@@ -30,11 +31,6 @@ const storyFormSchema = z.object({
 });
 
 type StoryFormValues = z.infer<typeof storyFormSchema>;
-
-interface GeneratedStory {
-  title: string;
-  story: string;
-}
 
 interface Sentence {
   id: string;
@@ -56,6 +52,7 @@ export default function GenerateStoryPage() {
   const [sentences, setSentences] = useState<Sentence[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isReadingAloud, setIsReadingAloud] = useState(false);
+  const [isChatOpen, setIsChatOpen] = useState(false);
   
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [audioSrc, setAudioSrc] = useState<string | null>(null);
@@ -298,72 +295,88 @@ export default function GenerateStoryPage() {
       )}
 
       {story && !isLoading && (
-        <Card className="max-w-3xl mx-auto shadow-xl animate-in fade-in-50 duration-500">
-          <CardHeader className="flex flex-row justify-between items-start">
-            <div>
-              <CardTitle className="font-headline text-3xl text-accent">{story.title}</CardTitle>
-              <CardDescription className="flex items-center gap-1.5 pt-2 text-base">
-                <Info size={16}/> Click a sentence to see its translation in {getLanguageLabel(spokenLanguage)}.
-              </CardDescription>
-            </div>
-            <Button variant="outline" size="lg" onClick={handleReadAloud} disabled={isReadingAloud}>
-              {isReadingAloud ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Volume2 className="mr-2 h-5 w-5" />}
-              Read Aloud
-            </Button>
-          </CardHeader>
-          <CardContent className="prose prose-lg max-w-none dark:prose-invert font-body leading-relaxed text-lg p-6 pt-0">
-            {sentences.map((sentence) => (
-              <React.Fragment key={sentence.id}>
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <span 
-                      className="cursor-pointer hover:bg-primary/20 p-1 rounded transition-colors"
-                      onClick={() => { if (!sentence.translation && !sentence.isTranslating) handleSentenceClick(sentence.id) }}
-                      role="button"
-                      tabIndex={0}
-                    >
-                      {sentence.text}{' '}
-                    </span>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Translation</AlertDialogTitle>
-                      <AlertDialogDescription className="text-base pt-2">
-                        <strong>{getLanguageLabel(learningLanguage)}:</strong> {sentence.text}
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <div className="py-4 text-base">
-                      {sentence.isTranslating && <div className="flex items-center gap-2"><Loader2 className="h-5 w-5 animate-spin"/> Translating...</div>}
-                      {sentence.translation && <p><strong>{getLanguageLabel(spokenLanguage)}:</strong> {sentence.translation}</p>}
-                    </div>
-                    <AlertDialogFooter>
-                      <AlertDialogAction>Close</AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-              </React.Fragment>
-            ))}
-          </CardContent>
-           <CardFooter className="bg-muted/40 p-4 flex justify-between">
-                <Button variant="outline" asChild>
-                    <Link href="/stories">
-                        <Library className="mr-2 h-4 w-4" />
-                        Back to Domains
-                    </Link>
-                </Button>
-                <Button onClick={() => {
-                  setStory(null)
-                  setAudioSrc(null)
-                  if(audioRef.current) {
-                    audioRef.current.pause();
-                    audioRef.current.currentTime = 0;
-                  }
-                  }}>
-                  <Sparkles className="mr-2 h-4 w-4" />
-                  Generate Another Story
-                </Button>
-            </CardFooter>
-        </Card>
+        <>
+          <Card className="max-w-3xl mx-auto shadow-xl animate-in fade-in-50 duration-500">
+            <CardHeader>
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div>
+                  <CardTitle className="font-headline text-3xl text-accent">{story.title}</CardTitle>
+                  <CardDescription className="flex items-center gap-1.5 pt-2 text-base">
+                    <Info size={16}/> Click a sentence to see its translation in {getLanguageLabel(spokenLanguage)}.
+                  </CardDescription>
+                </div>
+                <div className="flex gap-2">
+                  <Button variant="outline" size="lg" onClick={handleReadAloud} disabled={isReadingAloud}>
+                    {isReadingAloud ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Volume2 className="mr-2 h-5 w-5" />}
+                    Read Aloud
+                  </Button>
+                  <Button size="lg" onClick={() => setIsChatOpen(true)}>
+                    <MessageSquare className="mr-2 h-5 w-5" />
+                    Talk to a Character
+                  </Button>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="prose prose-lg max-w-none dark:prose-invert font-body leading-relaxed text-lg p-6 pt-0">
+              {sentences.map((sentence) => (
+                <React.Fragment key={sentence.id}>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <span 
+                        className="cursor-pointer hover:bg-primary/20 p-1 rounded transition-colors"
+                        onClick={() => { if (!sentence.translation && !sentence.isTranslating) handleSentenceClick(sentence.id) }}
+                        role="button"
+                        tabIndex={0}
+                      >
+                        {sentence.text}{' '}
+                      </span>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Translation</AlertDialogTitle>
+                        <AlertDialogDescription className="text-base pt-2">
+                          <strong>{getLanguageLabel(learningLanguage)}:</strong> {sentence.text}
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <div className="py-4 text-base">
+                        {sentence.isTranslating && <div className="flex items-center gap-2"><Loader2 className="h-5 w-5 animate-spin"/> Translating...</div>}
+                        {sentence.translation && <p><strong>{getLanguageLabel(spokenLanguage)}:</strong> {sentence.translation}</p>}
+                      </div>
+                      <AlertDialogFooter>
+                        <AlertDialogAction>Close</AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                </React.Fragment>
+              ))}
+            </CardContent>
+            <CardFooter className="bg-muted/40 p-4 flex justify-between">
+                  <Button variant="outline" asChild>
+                      <Link href="/stories">
+                          <Library className="mr-2 h-4 w-4" />
+                          Back to Domains
+                      </Link>
+                  </Button>
+                  <Button onClick={() => {
+                    setStory(null)
+                    setAudioSrc(null)
+                    if(audioRef.current) {
+                      audioRef.current.pause();
+                      audioRef.current.currentTime = 0;
+                    }
+                    }}>
+                    <Sparkles className="mr-2 h-4 w-4" />
+                    Generate Another Story
+                  </Button>
+              </CardFooter>
+          </Card>
+          
+          <LivingStoryChat 
+            isOpen={isChatOpen} 
+            onOpenChange={setIsChatOpen} 
+            story={story}
+          />
+        </>
       )}
     </div>
   );
