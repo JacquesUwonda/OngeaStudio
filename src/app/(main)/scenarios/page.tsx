@@ -4,7 +4,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { ArrowRight, Utensils, Plane, ShoppingCart, Building } from 'lucide-react';
+import { ArrowRight, Utensils, Plane, ShoppingCart, Building, Map, Car, Stethoscope, Briefcase, Landmark, Pill, Users, Phone } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
 const scenarios = [
@@ -39,6 +39,70 @@ const scenarios = [
     href: '/scenarios/hotel',
     color: 'text-gray-600',
     bgColor: 'bg-gray-600/10',
+  },
+  {
+    name: 'Asking for Directions',
+    description: 'Learn how to ask for and understand directions.',
+    icon: Map,
+    href: '/scenarios/directions',
+    color: 'text-emerald-500',
+    bgColor: 'bg-emerald-500/10',
+  },
+  {
+    name: 'Taking a Taxi',
+    description: 'Communicate your destination and pay the fare.',
+    icon: Car,
+    href: '/scenarios/taxi',
+    color: 'text-yellow-500',
+    bgColor: 'bg-yellow-500/10',
+  },
+  {
+    name: 'At the Doctor\'s Office',
+    description: 'Explain symptoms and understand medical advice.',
+    icon: Stethoscope,
+    href: '/scenarios/doctor',
+    color: 'text-red-500',
+    bgColor: 'bg-red-500/10',
+  },
+  {
+    name: 'A Job Interview',
+    description: 'Practice answering common interview questions.',
+    icon: Briefcase,
+    href: '/scenarios/job-interview',
+    color: 'text-indigo-500',
+    bgColor: 'bg-indigo-500/10',
+  },
+  {
+    name: 'Visiting a Museum',
+    description: 'Ask about exhibits and buy tickets.',
+    icon: Landmark,
+    href: '/scenarios/museum',
+    color: 'text-orange-500',
+    bgColor: 'bg-orange-500/10',
+  },
+  {
+    name: 'At the Pharmacy',
+    description: 'Ask for medication and describe your needs.',
+    icon: Pill,
+    href: '/scenarios/pharmacy',
+    color: 'text-rose-500',
+    bgColor: 'bg-rose-500/10',
+  },
+  {
+    name: 'Making Small Talk',
+    description: 'Practice casual conversation with new people.',
+    icon: Users,
+    href: '/scenarios/small-talk',
+    color: 'text-fuchsia-500',
+    bgColor: 'bg-fuchsia-500/10',
+  },
+  {
+    name: 'Customer Service Call',
+    description: 'Handle a phone call to resolve an issue.',
+    icon: Phone,
+    href: '/scenarios/customer-service',
+    color: 'text-teal-500',
+    bgColor: 'bg-teal-500/10',
   },
 ];
 
