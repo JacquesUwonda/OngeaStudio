@@ -7,7 +7,7 @@ import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/ca
 import { ArrowRight, Utensils, Plane, ShoppingCart, Building, Map, Car, Stethoscope, Briefcase, Landmark, Pill, Users, Phone } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
-const scenarios = [
+export const scenarios = [
   {
     name: 'At the Restaurant',
     description: 'Practice ordering food and drinks.',
