@@ -1,4 +1,6 @@
 
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BookHeart, MessageCircle, Layers3, AudioWaveform, BotMessageSquare, Infinity, Languages, Activity, Sparkles, Twitter, Github, Linkedin, Menu } from "lucide-react";
@@ -6,8 +8,11 @@ import Link from "next/link";
 import Image from "next/image";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Sheet, SheetTrigger, SheetContent } from "@/components/ui/sheet";
+import { useAnalytics } from "@/hooks/use-analytics";
 
 export default function LandingPage() {
+  const { trackButtonClick } = useAnalytics();
+
   const features = [
     {
       title: "Personalized Stories",
@@ -59,7 +64,7 @@ export default function LandingPage() {
                 <Link href="/signin" className="text-sm font-medium hover:underline underline-offset-4" prefetch={false}>
                     Sign In
                 </Link>
-                <Button asChild>
+                <Button asChild onClick={() => trackButtonClick('header_signup')}>
                     <Link href="/signup">Get Started Free</Link>
                 </Button>
             </nav>
@@ -88,7 +93,7 @@ export default function LandingPage() {
                             <Link href="/signin" className="text-base font-medium hover:underline underline-offset-4" prefetch={false}>
                                 Sign In
                             </Link>
-                            <Button asChild className="w-full">
+                            <Button asChild className="w-full" onClick={() => trackButtonClick('mobile_header_signup')}>
                                 <Link href="/signup">Get Started Free</Link>
                             </Button>
                         </div>
@@ -114,10 +119,10 @@ export default function LandingPage() {
                   </p>
                 </div>
                 <div className="flex flex-col gap-2 min-[400px]:flex-row">
-                  <Button size="lg" asChild>
+                  <Button size="lg" asChild onClick={() => trackButtonClick('hero_signup')}>
                     <Link href="/signup">Start Learning for Free</Link>
                   </Button>
-                  <Button size="lg" variant="outline" asChild>
+                  <Button size="lg" variant="outline" asChild onClick={() => trackButtonClick('hero_learn_more')}>
                     <Link href="#how-it-works">Learn More</Link>
                   </Button>
                 </div>
@@ -210,7 +215,7 @@ export default function LandingPage() {
                             Join thousands of learners and unlock your potential. Get started with Ongea for free today.
                         </p>
                         <div className="mt-6">
-                            <Button size="lg" asChild>
+                            <Button size="lg" asChild onClick={() => trackButtonClick('cta_signup')}>
                                 <Link href="/signup">
                                     Start Learning Now
                                     <Sparkles className="ml-2 h-5 w-5" />

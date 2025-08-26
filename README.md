@@ -68,3 +68,53 @@ To get a local copy up and running, follow these simple steps.
 -   `npm run lint`: Runs the Next.js linter to identify and fix code quality issues.
 -   `npm run typecheck`: Runs the TypeScript compiler to check for type errors.
 -   `npm run genkit:dev`: Starts the Genkit development server to inspect and test flows.
+-   `npm run setup-db`: Sets up the MySQL database and runs migrations.
+-   `npm run db:generate`: Generates the Prisma client.
+-   `npm run db:push`: Pushes the database schema to your MySQL database.
+-   `npm run db:studio`: Opens Prisma Studio to view and edit your data.
+
+## 🔐 Authentication & Analytics
+
+Ongea now includes a complete authentication system and analytics tracking:
+
+### Features Added:
+- **User Authentication**: Sign up, sign in, and session management with JWT
+- **Analytics Tracking**: Track user interactions, page views, and feature usage
+- **Admin Dashboard**: View user metrics, popular features, and conversion rates
+- **Protected Routes**: Automatic redirection for authenticated/unauthenticated users
+- **Real-time Analytics**: Live tracking of user behavior
+
+### Database Setup:
+
+1. **Install MySQL** and create a database for Ongea
+2. **Copy environment variables**:
+   ```bash
+   cp .env.example .env
+   ```
+3. **Configure your .env file**:
+   ```env
+   DATABASE_URL="mysql://username:password@localhost:3306/ongea_db"
+   JWT_SECRET="your-super-secret-jwt-key-here"
+   GEMINI_API_KEY="your-gemini-api-key"
+   ANALYTICS_ENABLED="true"
+   ```
+4. **Run the database setup**:
+   ```bash
+   npm run setup-db
+   ```
+
+### Analytics Dashboard:
+
+After setting up authentication, you can access the analytics dashboard at `/admin` to view:
+- Total users and signups
+- Conversion rates from landing page to signup
+- Most popular features and user interactions
+- Recent user activity and engagement metrics
+
+### Tracked Events:
+
+The system automatically tracks:
+- **Page Views**: All major pages (landing, dashboard, features)
+- **Button Clicks**: CTA buttons, navigation, feature access
+- **Feature Usage**: Stories generation, flashcards, AI chat
+- **User Actions**: Signup, signin, signout events

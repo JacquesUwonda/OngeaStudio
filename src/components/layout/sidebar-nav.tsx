@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, BookOpen, Layers, MessageCircle } from "lucide-react";
+import { Home, BookOpen, Layers, MessageCircle, BarChart3 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   SidebarMenu,
@@ -17,6 +17,7 @@ const navItems = [
   { href: "/stories", label: "Stories", icon: BookOpen },
   { href: "/flashcards", label: "Flashcards", icon: Layers },
   { href: "/chat", label: "Chat AI", icon: MessageCircle },
+  { href: "/admin", label: "Analytics", icon: BarChart3 },
 ];
 
 export function SidebarNav() {
