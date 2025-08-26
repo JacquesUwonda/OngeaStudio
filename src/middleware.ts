@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-import { validateSession } from '@/lib/auth'
+import { validateSessionSimple } from '@/lib/auth-simple'
 
 // Routes that require authentication
 const protectedRoutes = [
@@ -27,10 +27,16 @@ export async function middleware(request: NextRequest) {
 
   if (token) {
     try {
-      const session = await validateSession(token)
+      console.log(`Middleware: Validating token for path: ${pathname}`)
+      const session = await validateSessionSimple(token)
       isAuthenticated = !!session
       userId = session?.userId
       console.log(`Middleware: Token found, authenticated: ${isAuthenticated}, path: ${pathname}`)
+
+      // If validation fails, clear the invalid cookie
+      if (!session) {
+        console.log('Middleware: Invalid token detected, will clear cookie')
+      }
     } catch (error) {
       console.error('Middleware: Session validation failed:', error)
       isAuthenticated = false

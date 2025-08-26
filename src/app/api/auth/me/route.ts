@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { validateSession } from '@/lib/auth'
+import { validateSessionSimple } from '@/lib/auth-simple'
 import { db } from '@/lib/db'
 
 export async function GET(request: NextRequest) {
@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    const session = await validateSession(token)
+    const session = await validateSessionSimple(token)
     if (!session) {
       return NextResponse.json(
         { error: 'Invalid session' },

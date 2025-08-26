@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { db } from '@/lib/db'
-import { verifyPassword, createSession } from '@/lib/auth'
+import { verifyPassword, createSessionSimple } from '@/lib/auth-simple'
 import { AnalyticsService } from '@/lib/analytics'
 
 const signinSchema = z.object({
@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Create session
-    const token = await createSession(user.id)
+    const token = await createSessionSimple(user.id)
 
     // Track signin event
     await AnalyticsService.trackUserAction(

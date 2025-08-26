@@ -47,6 +47,7 @@ export async function createSession(userId: string): Promise<string> {
   })
 
   console.log('Session created with ID:', session.id)
+  console.log('Token stored in DB:', session.token.substring(0, 20) + '...')
   return token
 }
 
@@ -67,6 +68,17 @@ export async function validateSession(token: string): Promise<{ userId: string; 
     })
 
     console.log('Session found:', !!session)
+    console.log('Searching for token:', token.substring(0, 20) + '...')
+
+    // Debug: Let's also check if there are any sessions for this user
+    const userSessions = await db.session.findMany({
+      where: { userId: payload.userId },
+      select: { token: true, expiresAt: true, createdAt: true }
+    })
+    console.log('User has', userSessions.length, 'sessions')
+    if (userSessions.length > 0) {
+      console.log('Latest session token:', userSessions[0].token.substring(0, 20) + '...')
+    }
     if (session) {
       console.log('Session expires at:', session.expiresAt, 'Current time:', new Date())
     }
