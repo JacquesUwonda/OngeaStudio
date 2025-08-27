@@ -1,0 +1,73 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Language preferences
+  spokenLanguage   String @default("en")
+  learningLanguage String @default("fr")
+
+  // Relations
+  events   AnalyticsEvent[]
+  sessions Session[]
+
+  @@map("users")
+}
+
+model AnalyticsEvent {
+  id        String   @id @default(cuid())
+  userId    String?
+  sessionId String?
+  
+  // Event details
+  eventType String   // 'page_view', 'button_click', 'feature_used', etc.
+  eventName String   // 'cta_signup', 'generate_story', 'flip_flashcard', etc.
+  page      String?  // Current page/route
+  
+  // Event data (JSON)
+  properties Json?
+  
+  // User agent and device info
+  userAgent String?
+  ipAddress String?
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  
+  // Relations
+  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("analytics_events")
+  @@index([eventType])
+  @@index([eventName])
+  @@index([userId])
+  @@index([sessionId])
+  @@index([createdAt])
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("sessions")
+}

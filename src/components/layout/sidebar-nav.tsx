@@ -1,16 +1,15 @@
 
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { Home, BookOpen, Layers, MessageCircle, Theater } from "lucide-react";
-import { cn } from "@/lib/utils";
 import {
   SidebarMenu,
-  SidebarMenuItem,
   SidebarMenuButton,
+  SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { BarChart3, BookOpen, Home, Layers, MessageCircle, Theater } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: Home },
@@ -18,6 +17,7 @@ const navItems = [
   { href: "/flashcards", label: "Flashcards", icon: Layers },
   { href: "/scenarios", label: "Scenarios", icon: Theater },
   { href: "/chat", label: "Chat AI", icon: MessageCircle },
+  { href: "/admin", label: "Analytics", icon: BarChart3 },
 ];
 
 export function SidebarNav() {
