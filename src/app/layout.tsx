@@ -4,6 +4,7 @@ import "./globals.css";
 import { Providers } from "@/components/providers";
 import { Toaster } from "@/components/ui/toaster";
 import { LanguageProvider } from "@/contexts/language-context";
+import { AuthProvider } from "@/contexts/auth-context";
 
 export const metadata: Metadata = {
   title: "Ongea - Your AI Language Learning Companion",
@@ -25,10 +26,12 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased min-h-screen bg-background text-foreground">
         <Providers attribute="class" defaultTheme="system" enableSystem>
-          <LanguageProvider>
-            {children}
-            <Toaster />
-          </LanguageProvider>
+          <AuthProvider>
+            <LanguageProvider>
+              {children}
+              <Toaster />
+            </LanguageProvider>
+          </AuthProvider>
         </Providers>
       </body>
     </html>

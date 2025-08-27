@@ -1,10 +1,15 @@
 
+"use client";
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { BookOpen, Layers, MessageCircle, ArrowRight } from "lucide-react";
+import { useAnalytics } from "@/hooks/use-analytics";
 
 export default function DashboardPage() {
+  const { trackButtonClick } = useAnalytics();
+
   const features = [
     {
       title: "Interactive Stories",
@@ -52,7 +57,11 @@ export default function DashboardPage() {
             </CardHeader>
             <CardContent className="flex-grow flex items-end">
               <Link href={feature.href} passHref className="w-full">
-                <Button variant="default" className="w-full">
+                <Button
+                  variant="default"
+                  className="w-full"
+                  onClick={() => trackButtonClick(`dashboard_${feature.cta.toLowerCase().replace(/\s+/g, '_')}`)}
+                >
                   {feature.cta}
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
