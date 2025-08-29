@@ -47,6 +47,7 @@ export default function AdminSignInPage() {
   };
 
   return (
+    <div className="flex min-h-screen w-full flex-col items-center justify-center bg-background p-4">
     <Card className="w-full max-w-sm shadow-xl border-primary/20">
       <CardHeader className="space-y-1 text-center">
         <div className="flex justify-center items-center mb-4">
@@ -100,5 +101,6 @@ export default function AdminSignInPage() {
         </CardFooter>
       </form>
     </Card>
+    </div>
   );
 }

@@ -64,16 +64,6 @@ export async function middleware(request: NextRequest) {
     isUserAuthenticated = !!userSession
   }
 
-  // Redirect authenticated admins away from admin signin page
-  if (!!adminToken && adminAuthRoutes.some(route => pathname.startsWith(route))) {
-    // This logic is partially duplicated above but is fine.
-    // It is better to have explicit checks.
-    const adminSession = await validateAdminSessionSimple(adminToken);
-      if (adminSession) {
-        return NextResponse.redirect(new URL('/admin', request.url))
-      }
-  }
-
   // Redirect authenticated users away from user auth pages
   if (isUserAuthenticated && userRoutes.some(route => pathname.startsWith(route))) {
     return NextResponse.redirect(new URL('/dashboard', request.url))
