@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { toast } from './use-toast'
+import { useToast } from './use-toast'
 
 export interface User {
   id: string
@@ -26,6 +26,7 @@ export function useAuth() {
     isAuthenticated: false,
   })
   const router = useRouter()
+  const { toast } = useToast()
 
   // Check authentication status on mount
   useEffect(() => {
@@ -77,6 +78,10 @@ export function useAuth() {
           isLoading: false,
           isAuthenticated: true,
         })
+        toast({
+            title: "Success!",
+            description: "Signed in successfully.",
+        });
         return { success: true }
       } else {
         return { success: false, error: data.error }
@@ -111,6 +116,10 @@ export function useAuth() {
           isLoading: false,
           isAuthenticated: true,
         })
+         toast({
+            title: "Welcome to Ongea!",
+            description: "Your account has been created successfully.",
+        });
         return { success: true }
       } else {
         return { success: false, error: data.error }
@@ -164,7 +173,10 @@ export function useAuth() {
       const data = await response.json();
 
       if (response.ok) {
-        // We don't set user state here, as admin is separate
+        toast({
+          title: "Admin Success!",
+          description: "Signed in successfully.",
+        });
         return { success: true };
       } else {
         return { success: false, error: data.error };
@@ -172,6 +184,24 @@ export function useAuth() {
     } catch (error) {
       console.error('Admin sign in failed:', error);
       return { success: false, error: 'Network error' };
+    }
+  };
+
+  const adminSignOut = async () => {
+    try {
+      await fetch('/api/auth/admin/signout', {
+        method: 'POST',
+      });
+      
+      toast({
+        title: "Admin Signed Out",
+        description: "You have been successfully signed out.",
+      });
+      
+      router.push('/admin/signin');
+    } catch (error) {
+      console.error('Admin sign out failed:', error);
+      router.push('/admin/signin');
     }
   };
 
@@ -183,5 +213,6 @@ export function useAuth() {
     signOut,
     checkAuth,
     signInAsAdmin,
+    adminSignOut,
   }
 }

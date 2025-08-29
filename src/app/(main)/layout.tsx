@@ -1,4 +1,6 @@
+
 import AppLayout from "@/components/layout/app-layout";
+import { usePathname } from "next/navigation";
 
 export default function MainAppLayout({
     children,
