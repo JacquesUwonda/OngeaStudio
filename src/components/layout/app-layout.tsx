@@ -24,15 +24,36 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Label } from "@/components/ui/label";
 import { useLanguage, availableLanguages } from "@/contexts/language-context";
 import { useAuth } from "@/hooks/use-auth";
+import { useToast } from "@/hooks/use-toast";
 import { Separator } from "../ui/separator";
 
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { spokenLanguage, setSpokenLanguage, learningLanguage, setLearningLanguage } = useLanguage();
   const { signOut } = useAuth();
+  const { toast } = useToast();
+
+  const handleSignOut = async () => {
+    await signOut();
+    toast({
+      title: "Signed Out",
+      description: "You have been successfully signed out.",
+    });
+  };
 
   return (
     <div className="flex min-h-screen">
@@ -88,14 +109,31 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
            <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton
-                onClick={() => signOut()}
-                tooltip={{ children: "Sign Out", side: "right", align: "center" }}
-                className="justify-center group-data-[collapsible=icon]:h-10 group-data-[collapsible=icon]:w-10"
-              >
-                <LogOut className="h-5 w-5" />
-                <span className="group-data-[collapsible=icon]:hidden">Sign Out</span>
-              </SidebarMenuButton>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <SidebarMenuButton
+                    tooltip={{ children: "Sign Out", side: "right", align: "center" }}
+                    className="justify-center group-data-[collapsible=icon]:h-10 group-data-[collapsible=icon]:w-10"
+                  >
+                    <LogOut className="h-5 w-5" />
+                    <span className="group-data-[collapsible=icon]:hidden">Sign Out</span>
+                  </SidebarMenuButton>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Are you sure you want to sign out?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      You will be returned to the landing page and will need to sign in again to access your dashboard.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleSignOut}>
+                      Sign Out
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </SidebarMenuItem>
           </SidebarMenu>
 

@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { availableLanguages } from "@/contexts/language-context";
 import { useAnalytics } from "@/hooks/use-analytics";
 import { useAuth } from "@/hooks/use-auth";
+import { useToast } from "@/hooks/use-toast";
 import { BookHeart, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -27,6 +28,7 @@ export default function SignUpPage() {
 
   const { signUp } = useAuth();
   const { trackButtonClick, trackError } = useAnalytics();
+  const { toast } = useToast();
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -40,7 +42,10 @@ export default function SignUpPage() {
       const result = await signUp(name, email, password, spokenLanguage, learningLanguage);
 
       if (result.success) {
-        // Wait a bit for the cookie to be set, then redirect
+        toast({
+            title: "Welcome to Ongea!",
+            description: "Your account has been created successfully.",
+        });
         router.push("/dashboard");
       } else {
         setError(result.error || "Sign up failed");
@@ -48,7 +53,7 @@ export default function SignUpPage() {
       }
     } catch (err) {
       setError("An unexpected error occurred");
-      trackError("signup_error", { error: err });
+      trackError("signup_error", { error: (err as Error).message });
     } finally {
       setIsLoading(false);
     }

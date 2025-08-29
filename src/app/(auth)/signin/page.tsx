@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { PasswordInput } from "@/components/ui/password-input";
 import { useAnalytics } from "@/hooks/use-analytics";
 import { useAuth } from "@/hooks/use-auth";
+import { useToast } from "@/hooks/use-toast";
 import { BookHeart, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -22,6 +23,7 @@ export default function SignInPage() {
 
   const { signIn } = useAuth();
   const { trackButtonClick, trackError } = useAnalytics();
+  const { toast } = useToast();
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
@@ -37,7 +39,10 @@ export default function SignInPage() {
       const result = await signIn(email, password);
 
       if (result.success) {
-        // Wait a bit for the cookie to be set, then redirect
+        toast({
+          title: "Success!",
+          description: "Signed in successfully.",
+        });
         router.push(callbackUrl);
       } else {
         setError(result.error || "Sign in failed");
@@ -45,7 +50,7 @@ export default function SignInPage() {
       }
     } catch (err) {
       setError("An unexpected error occurred");
-      trackError("signin_error", { error: err });
+      trackError("signin_error", { error: (err as Error).message });
     } finally {
       setIsLoading(false);
     }
