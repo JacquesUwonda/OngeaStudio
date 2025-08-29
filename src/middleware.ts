@@ -45,6 +45,17 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL('/admin/signin', request.url))
     }
   }
+  
+  // If trying to access admin signin page while already logged in as admin, redirect to admin dashboard
+  if (pathname.startsWith('/admin/signin')) {
+    if (adminToken) {
+      const adminSession = await validateAdminSessionSimple(adminToken);
+      if (adminSession) {
+        return NextResponse.redirect(new URL('/admin', request.url));
+      }
+    }
+  }
+
 
   // User route protection
   let isUserAuthenticated = false
@@ -55,7 +66,12 @@ export async function middleware(request: NextRequest) {
 
   // Redirect authenticated admins away from admin signin page
   if (!!adminToken && adminAuthRoutes.some(route => pathname.startsWith(route))) {
-    return NextResponse.redirect(new URL('/admin', request.url))
+    // This logic is partially duplicated above but is fine.
+    // It is better to have explicit checks.
+    const adminSession = await validateAdminSessionSimple(adminToken);
+      if (adminSession) {
+        return NextResponse.redirect(new URL('/admin', request.url))
+      }
   }
 
   // Redirect authenticated users away from user auth pages

@@ -1,4 +1,3 @@
-
 import { AdminNav } from "@/components/layout/admin-nav";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { BookHeart } from "lucide-react";
