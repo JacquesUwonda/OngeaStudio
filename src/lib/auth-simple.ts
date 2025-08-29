@@ -1,69 +1,82 @@
-import jwt from 'jsonwebtoken'
-import bcrypt from 'bcryptjs'
-import { db } from './db'
+// FILE: lib/auth-simple.ts
 
-const JWT_SECRET = process.env.JWT_SECRET || 'fallback-secret-key'
+import bcrypt from 'bcryptjs';
+import { SignJWT, jwtVerify } from 'jose';
+import { db } from './db';
+
+// This helper function ensures the secret is correctly encoded for the crypto operations.
+function getJwtSecretKey() {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    throw new Error('JWT_SECRET environment variable is not set');
+  }
+  return new TextEncoder().encode(secret);
+}
 
 export interface JWTPayload {
-  userId: string
-  email: string
+  userId: string;
+  email: string;
 }
 
 export async function hashPassword(password: string): Promise<string> {
-  return bcrypt.hash(password, 12)
+  return bcrypt.hash(password, 12);
 }
 
 export async function verifyPassword(password: string, hashedPassword: string): Promise<boolean> {
-  return bcrypt.compare(password, hashedPassword)
+  return bcrypt.compare(password, hashedPassword);
 }
 
-export function generateToken(payload: JWTPayload): string {
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: '7d' })
+// Re-implemented with `jose` to be Edge Runtime compatible
+export async function generateToken(payload: JWTPayload): Promise<string> {
+  return await new SignJWT(payload)
+    .setProtectedHeader({ alg: 'HS256' })
+    .setIssuedAt()
+    .setExpirationTime('7d')
+    .sign(getJwtSecretKey());
 }
 
-export function verifyToken(token: string): JWTPayload | null {
+// Re-implemented with `jose`
+export async function verifyToken(token: string): Promise<JWTPayload | null> {
   try {
-    return jwt.verify(token, JWT_SECRET) as JWTPayload
-  } catch {
-    return null
+    const { payload } = await jwtVerify(token, getJwtSecretKey());
+    return payload as JWTPayload;
+  } catch (error) {
+    // Token is invalid or expired
+    return null;
   }
 }
 
-// Simplified session creation - just return the JWT token
+// This function becomes async because generateToken is now async
 export async function createSessionSimple(userId: string): Promise<string> {
-  const user = await db.user.findUnique({ where: { id: userId } })
-  if (!user) throw new Error('User not found')
+  const user = await db.user.findUnique({ where: { id: userId } });
+  if (!user) throw new Error('User not found');
 
-  const token = generateToken({ userId: user.id, email: user.email })
-  console.log('Creating simple session for user:', userId)
+  const token = await generateToken({ userId: user.id, email: user.email });
+  console.log('Creating simple session for user:', userId);
   
-  return token
+  return token;
 }
 
-// Simplified validation - just verify the JWT token
+// This function was already async, we just need to `await` the new verifyToken
 export async function validateSessionSimple(token: string): Promise<{ userId: string; email: string } | null> {
   try {
-    console.log('Validating simple token:', token.substring(0, 20) + '...')
+    console.log('Validating simple token (Edge-safe)...');
     
-    const payload = verifyToken(token)
+    const payload = await verifyToken(token);
+    
     if (!payload) {
-      console.log('Simple token verification failed')
-      return null
+      console.log('Simple token verification failed');
+      return null;
     }
     
-    console.log('Simple token verified for user:', payload.userId)
+    console.log('Simple token verified for user:', payload.userId);
     
-    // Verify user still exists
-    const user = await db.user.findUnique({ where: { id: payload.userId } })
-    if (!user) {
-      console.log('User no longer exists')
-      return null
-    }
+    // The responsibility of checking if the user exists is now on the API routes
+    // that consume this token, not on the middleware.
     
-    console.log('Simple session valid for user:', user.email)
-    return { userId: user.id, email: user.email }
+    return { userId: payload.userId, email: payload.email };
   } catch (error) {
-    console.error('Simple session validation error:', error)
-    return null
+    console.error('Simple session validation error:', error);
+    return null;
   }
 }

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { deleteSession } from '@/lib/auth'
+// import { deleteSession } from '@/lib/auth'
 import { AnalyticsService } from '@/lib/analytics'
 
 export async function POST(request: NextRequest) {
@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
       )
 
       // Delete session from database
-      await deleteSession(token)
+      // await deleteSession(token)
     }
 
     // Clear cookie

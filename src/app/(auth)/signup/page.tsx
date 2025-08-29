@@ -1,20 +1,20 @@
 
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { PasswordInput } from "@/components/ui/password-input";
 import { Label } from "@/components/ui/label";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { PasswordInput } from "@/components/ui/password-input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import Link from "next/link";
-import { BookHeart, Loader2 } from "lucide-react";
-import { useAuth } from "@/hooks/use-auth";
-import { useAnalytics } from "@/hooks/use-analytics";
 import { availableLanguages } from "@/contexts/language-context";
+import { useAnalytics } from "@/hooks/use-analytics";
+import { useAuth } from "@/hooks/use-auth";
+import { BookHeart, Loader2 } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function SignUpPage() {
   const [name, setName] = useState("");
@@ -41,9 +41,7 @@ export default function SignUpPage() {
 
       if (result.success) {
         // Wait a bit for the cookie to be set, then redirect
-        setTimeout(() => {
-          window.location.href = "/dashboard";
-        }, 500);
+        router.push("/dashboard");
       } else {
         setError(result.error || "Sign up failed");
         trackError("signup_failed", { error: result.error });
