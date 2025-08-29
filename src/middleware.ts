@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { validateSessionSimple } from '@/lib/auth-simple'
-import { validateAdminSession } from '@/lib/admin-auth'
+import { validateAdminSessionSimple } from '@/lib/admin-auth'
 
 // Routes that require standard user authentication
 const protectedUserRoutes = [
@@ -37,7 +37,7 @@ export async function middleware(request: NextRequest) {
   if (protectedAdminRoutes.some(route => pathname.startsWith(route)) && pathname !== '/admin/signin') {
     let isAdminAuthenticated = false
     if (adminToken) {
-      const adminSession = await validateAdminSession(adminToken)
+      const adminSession = await validateAdminSessionSimple(adminToken)
       isAdminAuthenticated = !!adminSession
     }
     

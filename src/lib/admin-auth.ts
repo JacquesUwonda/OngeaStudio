@@ -61,3 +61,17 @@ export async function validateAdminSession(token: string): Promise<{ adminId: st
     return null;
   }
 }
+
+// Edge-safe version for middleware
+export async function validateAdminSessionSimple(token: string): Promise<{ adminId: string; email: string } | null> {
+    try {
+        const payload = await verifyAdminToken(token);
+        if (!payload || !payload.adminId) {
+            return null;
+        }
+        return { adminId: payload.adminId, email: payload.email };
+    } catch (error) {
+        console.error('Simple admin session validation error:', error);
+        return null;
+    }
+}
