@@ -7,7 +7,8 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { BarChart3, BookOpen, Home, Layers, MessageCircle, Theater } from "lucide-react";
+import { useAuth } from "@/hooks/use-auth";
+import { BarChart3, BookOpen, Home, Layers, LogOut, MessageCircle, Theater } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -23,23 +24,37 @@ const navItems = [
 export function SidebarNav() {
   const pathname = usePathname();
   const { setOpenMobile } = useSidebar();
+  const { signOut } = useAuth();
 
   return (
-    <SidebarMenu>
-      {navItems.map((item) => (
-        <SidebarMenuItem key={item.href}>
-          <Link href={item.href} asChild>
-            <SidebarMenuButton
-              isActive={pathname.startsWith(item.href) && (item.href !== "/dashboard" || pathname === "/dashboard")}
-              tooltip={{ children: item.label, side: "right", align: "center" }}
-              onClick={() => setOpenMobile(false)}
-            >
-              <item.icon className="h-5 w-5" />
-              <span>{item.label}</span>
-            </SidebarMenuButton>
-          </Link>
+    <SidebarMenu className="flex flex-col justify-between flex-1">
+      <div>
+        {navItems.map((item) => (
+          <SidebarMenuItem key={item.href}>
+            <Link href={item.href} asChild>
+              <SidebarMenuButton
+                isActive={pathname.startsWith(item.href) && (item.href !== "/dashboard" || pathname === "/dashboard")}
+                tooltip={{ children: item.label, side: "right", align: "center" }}
+                onClick={() => setOpenMobile(false)}
+              >
+                <item.icon className="h-5 w-5" />
+                <span>{item.label}</span>
+              </SidebarMenuButton>
+            </Link>
+          </SidebarMenuItem>
+        ))}
+      </div>
+      <div>
+        <SidebarMenuItem>
+          <SidebarMenuButton
+            onClick={() => signOut()}
+            tooltip={{ children: "Sign Out", side: "right", align: "center" }}
+          >
+            <LogOut className="h-5 w-5" />
+            <span>Sign Out</span>
+          </SidebarMenuButton>
         </SidebarMenuItem>
-      ))}
+      </div>
     </SidebarMenu>
   );
 }
