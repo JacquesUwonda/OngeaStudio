@@ -7,8 +7,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { useAuth } from "@/hooks/use-auth";
-import { BarChart3, BookOpen, Home, Layers, LogOut, MessageCircle, Theater } from "lucide-react";
+import { BarChart3, BookOpen, Home, Layers, MessageCircle, Theater } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -24,7 +23,6 @@ const navItems = [
 export function SidebarNav() {
   const pathname = usePathname();
   const { setOpenMobile } = useSidebar();
-  const { signOut } = useAuth();
 
   return (
     <SidebarMenu className="flex flex-col justify-between flex-1">
@@ -43,17 +41,6 @@ export function SidebarNav() {
             </Link>
           </SidebarMenuItem>
         ))}
-      </div>
-      <div>
-        <SidebarMenuItem>
-          <SidebarMenuButton
-            onClick={() => signOut()}
-            tooltip={{ children: "Sign Out", side: "right", align: "center" }}
-          >
-            <LogOut className="h-5 w-5" />
-            <span>Sign Out</span>
-          </SidebarMenuButton>
-        </SidebarMenuItem>
       </div>
     </SidebarMenu>
   );

@@ -3,7 +3,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { BookHeart, Languages, MessageSquareText } from "lucide-react";
+import { BookHeart, Languages, LogOut, MessageSquareText } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { SidebarNav } from "./sidebar-nav";
 import {
@@ -12,7 +12,10 @@ import {
   SidebarHeader,
   SidebarInset,
   SidebarFooter,
-  SidebarTrigger
+  SidebarTrigger,
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuButton,
 } from "@/components/ui/sidebar";
 import {
   Select,
@@ -23,10 +26,13 @@ import {
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { useLanguage, availableLanguages } from "@/contexts/language-context";
+import { useAuth } from "@/hooks/use-auth";
+import { Separator } from "../ui/separator";
 
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { spokenLanguage, setSpokenLanguage, learningLanguage, setLearningLanguage } = useLanguage();
+  const { signOut } = useAuth();
 
   return (
     <div className="flex min-h-screen">
@@ -78,7 +84,22 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             </Select>
           </div>
           
-          <p className="text-xs text-muted-foreground group-data-[collapsible=icon]:hidden">
+          <Separator className="my-2 bg-sidebar-border group-data-[collapsible=icon]:hidden" />
+
+           <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                onClick={() => signOut()}
+                tooltip={{ children: "Sign Out", side: "right", align: "center" }}
+                className="justify-center group-data-[collapsible=icon]:h-10 group-data-[collapsible=icon]:w-10"
+              >
+                <LogOut className="h-5 w-5" />
+                <span className="group-data-[collapsible=icon]:hidden">Sign Out</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+
+          <p className="text-xs text-muted-foreground group-data-[collapsible=icon]:hidden text-center mt-4">
             © 2025 Ongea by Jacques Uwonda
           </p>
            <div className="group-data-[collapsible=icon]:flex group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:w-full hidden mt-2">
