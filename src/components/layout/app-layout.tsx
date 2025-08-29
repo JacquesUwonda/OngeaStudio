@@ -40,11 +40,12 @@ import { useLanguage, availableLanguages } from "@/contexts/language-context";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import { Separator } from "../ui/separator";
+import { UserNav } from "./user-nav";
 
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { spokenLanguage, setSpokenLanguage, learningLanguage, setLearningLanguage } = useLanguage();
-  const { signOut } = useAuth();
+  const { signOut, isAuthenticated } = useAuth();
   const { toast } = useToast();
 
   const handleSignOut = async () => {
@@ -153,7 +154,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           </div>
           <div className="flex items-center gap-4">
             <ThemeToggle />
-            {/* User avatar/menu could go here */}
+            {isAuthenticated && <UserNav />}
           </div>
         </header>
         <main className="flex-1 flex flex-col overflow-auto">
