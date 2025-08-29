@@ -1,7 +1,9 @@
+
 'use client'
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { toast } from './use-toast'
 
 export interface User {
   id: string
@@ -130,6 +132,11 @@ export function useAuth() {
         isLoading: false,
         isAuthenticated: false,
       })
+
+      toast({
+        title: "Signed Out",
+        description: "You have been successfully signed out.",
+      });
       
       router.push('/')
     } catch (error) {
