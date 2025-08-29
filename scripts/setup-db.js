@@ -28,21 +28,24 @@ if (!fs.existsSync(envPath)) {
 }
 
 try {
-  console.log('📦 Installing Prisma CLI...');
-  execSync('npm install prisma --save-dev', { stdio: 'inherit' });
-  
+  console.log('📦 Installing dependencies...');
+  execSync('npm install', { stdio: 'inherit' });
+
   console.log('\n🔧 Generating Prisma client...');
   execSync('npx prisma generate', { stdio: 'inherit' });
   
   console.log('\n📊 Pushing database schema...');
   execSync('npx prisma db push', { stdio: 'inherit' });
+
+  console.log('\n🌱 Seeding database with default admin user...');
+  execSync('npx prisma db seed', { stdio: 'inherit' });
   
   console.log('\n✅ Database setup completed successfully!');
   console.log('\n📋 Next steps:');
   console.log('1. Start your development server: npm run dev');
   console.log('2. Visit http://localhost:9002 to see your app');
-  console.log('3. Create an account to test the authentication');
-  console.log('4. Visit /admin to see analytics (after creating an account)');
+  console.log('3. Visit http://localhost:9002/admin/signin to log in as admin');
+  console.log('   (Credentials are in the console above from the seed script)');
   console.log('\n🎉 Happy coding!');
   
 } catch (error) {

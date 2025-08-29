@@ -143,6 +143,31 @@ export function useAuth() {
       router.push('/')
     }
   }
+  
+  const signInAsAdmin = async (email: string, password: string) => {
+    try {
+      const response = await fetch('/api/auth/admin/signin', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // We don't set user state here, as admin is separate
+        return { success: true };
+      } else {
+        return { success: false, error: data.error };
+      }
+    } catch (error) {
+      console.error('Admin sign in failed:', error);
+      return { success: false, error: 'Network error' };
+    }
+  };
+
 
   return {
     ...authState,
@@ -150,5 +175,6 @@ export function useAuth() {
     signUp,
     signOut,
     checkAuth,
+    signInAsAdmin,
   }
 }
