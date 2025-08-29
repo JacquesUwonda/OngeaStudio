@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -106,160 +107,162 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="flex-1 p-6 space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold font-headline">Analytics Dashboard</h1>
-          <p className="text-muted-foreground">Monitor user engagement and app performance</p>
+    <div className="w-full max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+      <div className="space-y-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <h1 className="text-3xl font-bold font-headline">Analytics Dashboard</h1>
+            <p className="text-muted-foreground">Monitor user engagement and app performance</p>
+          </div>
+          <div className="flex items-center gap-4">
+            <Select value={timeRange} onValueChange={setTimeRange}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Select time range" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="7">Last 7 days</SelectItem>
+                <SelectItem value="30">Last 30 days</SelectItem>
+                <SelectItem value="90">Last 90 days</SelectItem>
+              </SelectContent>
+            </Select>
+            <Button onClick={fetchStats} variant="outline" size="sm">
+              <RefreshCw className="mr-2 h-4 w-4" />
+              Refresh
+            </Button>
+          </div>
         </div>
-        <div className="flex items-center gap-4">
-          <Select value={timeRange} onValueChange={setTimeRange}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Select time range" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="7">Last 7 days</SelectItem>
-              <SelectItem value="30">Last 30 days</SelectItem>
-              <SelectItem value="90">Last 90 days</SelectItem>
-            </SelectContent>
-          </Select>
-          <Button onClick={fetchStats} variant="outline" size="sm">
-            <RefreshCw className="mr-2 h-4 w-4" />
-            Refresh
-          </Button>
+
+        {/* Key Metrics */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Total Users</CardTitle>
+              <Users className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stats?.userStats.totalUsers || 0}</div>
+              <p className="text-xs text-muted-foreground">
+                {stats?.userStats.totalSignups || 0} new signups
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Active Users</CardTitle>
+              <Activity className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stats?.userStats.activeUsers || 0}</div>
+              <p className="text-xs text-muted-foreground">
+                Users with activity
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Total Events</CardTitle>
+              <MousePointer className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stats?.userStats.totalEvents || 0}</div>
+              <p className="text-xs text-muted-foreground">
+                User interactions tracked
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Conversion Rate</CardTitle>
+              <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stats?.userStats.conversionRate || 0}%</div>
+              <p className="text-xs text-muted-foreground">
+                Visitors to signups
+              </p>
+            </CardContent>
+          </Card>
         </div>
-      </div>
 
-      {/* Key Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Users</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats?.userStats.totalUsers || 0}</div>
-            <p className="text-xs text-muted-foreground">
-              {stats?.userStats.totalSignups || 0} new signups
-            </p>
-          </CardContent>
-        </Card>
+        <Tabs defaultValue="events" className="space-y-4">
+          <TabsList>
+            <TabsTrigger value="events">Events</TabsTrigger>
+            <TabsTrigger value="features">Popular Features</TabsTrigger>
+            <TabsTrigger value="users">Recent Users</TabsTrigger>
+          </TabsList>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Users</CardTitle>
-            <Activity className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats?.userStats.activeUsers || 0}</div>
-            <p className="text-xs text-muted-foreground">
-              Users with activity
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Events</CardTitle>
-            <MousePointer className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats?.userStats.totalEvents || 0}</div>
-            <p className="text-xs text-muted-foreground">
-              User interactions tracked
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Conversion Rate</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats?.userStats.conversionRate || 0}%</div>
-            <p className="text-xs text-muted-foreground">
-              Visitors to signups
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-
-      <Tabs defaultValue="events" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="events">Events</TabsTrigger>
-          <TabsTrigger value="features">Popular Features</TabsTrigger>
-          <TabsTrigger value="users">Recent Users</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="events" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Event Activity</CardTitle>
-              <CardDescription>Most frequent user interactions</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                {stats?.eventCounts.slice(0, 10).map((event, index) => (
-                  <div key={event.eventName} className="flex items-center justify-between">
-                    <span className="text-sm">{event.eventName.replace(/_/g, ' ')}</span>
-                    <Badge variant="secondary">{event._count.id}</Badge>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="features" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Popular Features</CardTitle>
-              <CardDescription>Most used app features</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                {stats?.popularFeatures.map((feature, index) => (
-                  <div key={feature.eventName} className="flex items-center justify-between">
-                    <span className="text-sm">{feature.eventName.replace(/feature_/g, '').replace(/_/g, ' ')}</span>
-                    <Badge variant="secondary">{feature._count.id}</Badge>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="users" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Recent Signups</CardTitle>
-              <CardDescription>Latest users who joined</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {stats?.recentSignups.map((user) => (
-                  <div key={user.id} className="flex items-center justify-between border-b pb-2">
-                    <div>
-                      <p className="font-medium">{user.name}</p>
-                      <p className="text-sm text-muted-foreground">{user.email}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {user.spokenLanguage} → {user.learningLanguage}
-                      </p>
+          <TabsContent value="events" className="space-y-4">
+            <Card>
+              <CardHeader>
+                <CardTitle>Event Activity</CardTitle>
+                <CardDescription>Most frequent user interactions</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  {stats?.eventCounts.slice(0, 10).map((event, index) => (
+                    <div key={event.eventName} className="flex items-center justify-between">
+                      <span className="text-sm capitalize">{event.eventName.replace(/_/g, ' ')}</span>
+                      <Badge variant="secondary">{event._count.id}</Badge>
                     </div>
-                    <div className="text-right">
-                      <p className="text-sm">{format(new Date(user.createdAt), 'MMM dd')}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {format(new Date(user.createdAt), 'HH:mm')}
-                      </p>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="features" className="space-y-4">
+            <Card>
+              <CardHeader>
+                <CardTitle>Popular Features</CardTitle>
+                <CardDescription>Most used app features</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  {stats?.popularFeatures.map((feature, index) => (
+                    <div key={feature.eventName} className="flex items-center justify-between">
+                      <span className="text-sm capitalize">{feature.eventName.replace(/feature_/g, '').replace(/_/g, ' ')}</span>
+                      <Badge variant="secondary">{feature._count.id}</Badge>
                     </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="users" className="space-y-4">
+            <Card>
+              <CardHeader>
+                <CardTitle>Recent Signups</CardTitle>
+                <CardDescription>Latest users who joined</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {stats?.recentSignups.map((user) => (
+                    <div key={user.id} className="flex items-center justify-between border-b pb-2 last:border-b-0">
+                      <div>
+                        <p className="font-medium">{user.name}</p>
+                        <p className="text-sm text-muted-foreground">{user.email}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {user.spokenLanguage} → {user.learningLanguage}
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-sm">{format(new Date(user.createdAt), 'MMM dd, yyyy')}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {format(new Date(user.createdAt), 'HH:mm')}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
+      </div>
     </div>
   );
 }
