@@ -22,7 +22,7 @@ export default function AdminLayout({
                     <AdminNav />
                 </div>
             </header>
-            <main className="flex-1 flex flex-col overflow-auto bg-muted/30">
+            <main className="flex flex-1 flex-col bg-muted/30">
                 {children}
             </main>
         </div>
