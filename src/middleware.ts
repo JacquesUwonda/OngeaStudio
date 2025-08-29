@@ -34,7 +34,7 @@ export async function middleware(request: NextRequest) {
   const adminToken = request.cookies.get('admin-auth-token')?.value
 
   // Admin route protection
-  if (protectedAdminRoutes.some(route => pathname.startsWith(route))) {
+  if (protectedAdminRoutes.some(route => pathname.startsWith(route)) && pathname !== '/admin/signin') {
     let isAdminAuthenticated = false
     if (adminToken) {
       const adminSession = await validateAdminSession(adminToken)
@@ -44,8 +44,6 @@ export async function middleware(request: NextRequest) {
     if (!isAdminAuthenticated) {
       return NextResponse.redirect(new URL('/admin/signin', request.url))
     }
-    // If authenticated, let them proceed
-    return NextResponse.next()
   }
 
   // User route protection
