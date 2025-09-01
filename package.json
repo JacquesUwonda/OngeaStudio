@@ -11,7 +11,7 @@
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
     "postinstall": "prisma generate",
-    "prisma:migrate": "prisma migrate dev",
+    "setup-db": "prisma migrate dev --name init",
     "prisma:studio": "prisma studio"
   },
   "dependencies": {
