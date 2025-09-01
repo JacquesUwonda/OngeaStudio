@@ -4,7 +4,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Users, BookOpen, Layers, LineChart, Activity, Star } from "lucide-react";
+import { Users, BookOpen, Layers, LineChart, Activity, Star, Zap } from "lucide-react";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, XAxis, YAxis, Tooltip, Legend, Line, ComposedChart } from "recharts";
 import { ChartTooltipContent, ChartContainer } from "@/components/ui/chart";
 import { useEffect, useState } from "react";
@@ -31,6 +31,14 @@ const popularFeatures = [
     { name: "Flashcards", usage: 980, icon: Layers },
     { name: "AI Chat", usage: 750, icon: Activity },
     { name: "Scenarios", usage: 450, icon: Star },
+];
+
+const liveEvents = [
+    { event: "Story Generated", details: "Topic: Technology", user: "user8@example.com", time: "2m ago" },
+    { event: "Flashcard Set Complete", details: "Topic: Travel, 85% known", user: "user2@example.com", time: "3m ago" },
+    { event: "Chat Message Sent", details: "Length: 12 words", user: "user12@example.com", time: "5m ago" },
+    { event: "Scenario Started", details: "Scenario: At the Restaurant", user: "user3@example.com", time: "7m ago" },
+    { event: "Language Changed", details: "Switched to learning Spanish", user: "user2@example.com", time: "10m ago" },
 ];
 
 export default function AdminDashboardPage() {
@@ -140,39 +148,76 @@ export default function AdminDashboardPage() {
             </CardContent>
         </Card>
       </div>
+
+       <div className="grid grid-cols-1 gap-4 md:gap-8 lg:grid-cols-2">
+        <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Zap className="h-5 w-5" />
+                Live Event Stream
+              </CardTitle>
+              <CardDescription>
+                A real-time feed of user interactions within the app.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                  <TableHeader>
+                      <TableRow>
+                      <TableHead>Event</TableHead>
+                      <TableHead>User</TableHead>
+                      <TableHead className="text-right">Time</TableHead>
+                      </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                      {liveEvents.map((event, index) => (
+                          <TableRow key={index}>
+                              <TableCell>
+                                  <div className="font-medium">{event.event}</div>
+                                  <div className="text-xs text-muted-foreground">{event.details}</div>
+                              </TableCell>
+                              <TableCell>{event.user}</TableCell>
+                              <TableCell className="text-right">{event.time}</TableCell>
+                          </TableRow>
+                      ))}
+                  </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
       
-       <Card>
-          <CardHeader>
-            <CardTitle>Recent User Sign-ins</CardTitle>
-            <CardDescription>
-              A log of the latest successful user authentication events.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Table>
-                <TableHeader>
-                    <TableRow>
-                    <TableHead>Email</TableHead>
-                    <TableHead>Sign-in Date</TableHead>
-                    <TableHead className="text-right">Status</TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {recentSignIns.map((signIn, index) => (
-                        <TableRow key={index}>
-                            <TableCell>
-                                <div className="font-medium">{signIn.email}</div>
-                            </TableCell>
-                            <TableCell>{signIn.date}</TableCell>
-                            <TableCell className="text-right">
-                                <Badge variant="default" className="bg-green-500/20 text-green-700 hover:bg-green-500/30 dark:bg-green-500/10 dark:text-green-400 dark:hover:bg-green-500/20">{signIn.status}</Badge>
-                            </TableCell>
-                        </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>Recent User Sign-ins</CardTitle>
+              <CardDescription>
+                A log of the latest successful user authentication events.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                  <TableHeader>
+                      <TableRow>
+                      <TableHead>Email</TableHead>
+                      <TableHead>Sign-in Date</TableHead>
+                      <TableHead className="text-right">Status</TableHead>
+                      </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                      {recentSignIns.map((signIn, index) => (
+                          <TableRow key={index}>
+                              <TableCell>
+                                  <div className="font-medium">{signIn.email}</div>
+                              </TableCell>
+                              <TableCell>{signIn.date}</TableCell>
+                              <TableCell className="text-right">
+                                  <Badge variant="default" className="bg-green-500/20 text-green-700 hover:bg-green-500/30 dark:bg-green-500/10 dark:text-green-400 dark:hover:bg-green-500/20">{signIn.status}</Badge>
+                              </TableCell>
+                          </TableRow>
+                      ))}
+                  </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        </div>
 
     </main>
   );
