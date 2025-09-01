@@ -11,7 +11,7 @@ import { ai } from "@/ai/genkit";
 import prisma from "./prisma";
 import { z } from 'zod';
 import bcrypt from 'bcrypt';
-import { createSession } from './auth';
+import { createSession, deleteSession } from './auth';
 import { redirect } from 'next/navigation';
 
 // Define the structure of a single flashcard item as expected by the frontend after processing
