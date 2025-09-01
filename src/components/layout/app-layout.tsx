@@ -23,10 +23,14 @@ import {
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { useLanguage, availableLanguages } from "@/contexts/language-context";
-import { UserNav } from "./user-nav";
 
-
-export default function AppLayout({ children }: { children: React.ReactNode }) {
+export default function AppLayout({ 
+    children,
+    userNav 
+}: { 
+    children: React.ReactNode,
+    userNav: React.ReactNode
+}) {
   const { spokenLanguage, setSpokenLanguage, learningLanguage, setLearningLanguage } = useLanguage();
 
   return (
@@ -95,7 +99,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           </div>
           <div className="flex items-center gap-4">
             <ThemeToggle />
-            <UserNav />
+            {userNav}
           </div>
         </header>
         <main className="flex-1 flex flex-col overflow-auto">
