@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Users, BookOpen, Layers, LineChart, Activity, Star } from "lucide-react";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, XAxis, YAxis, Tooltip, Legend, Line, ComposedChart } from "recharts";
 import { ChartTooltipContent, ChartContainer } from "@/components/ui/chart";
+import { useEffect, useState } from "react";
 
 const chartData = [
   { month: "January", users: 186 },
@@ -33,6 +34,12 @@ const popularFeatures = [
 ];
 
 export default function AdminDashboardPage() {
+    const [isClient, setIsClient] = useState(false)
+
+    useEffect(() => {
+        setIsClient(true)
+    }, [])
+
   return (
     <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -124,7 +131,7 @@ export default function AdminDashboardPage() {
                         </div>
                         <div className="flex-1">
                             <p className="font-medium">{feature.name}</p>
-                            <p className="text-xs text-muted-foreground">{feature.usage.toLocaleString()} interactions</p>
+                            {isClient && <p className="text-xs text-muted-foreground">{feature.usage.toLocaleString('en-US')} interactions</p>}
                         </div>
                         <div className="font-semibold text-lg">{popularFeatures.indexOf(feature) + 1}</div>
                     </div>
@@ -170,5 +177,3 @@ export default function AdminDashboardPage() {
     </main>
   );
 }
-
-    
