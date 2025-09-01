@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { BookHeart } from "lucide-react";
+import { PasswordInput } from "@/components/ui/password-input";
 
 export default function SignInPage() {
   return (
@@ -23,7 +24,7 @@ export default function SignInPage() {
         </div>
         <div className="space-y-2">
           <Label htmlFor="password">Password</Label>
-          <Input id="password" type="password" />
+          <PasswordInput id="password" />
         </div>
       </CardContent>
       <CardFooter className="flex flex-col gap-4">

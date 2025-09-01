@@ -4,10 +4,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { BookHeart } from "lucide-react";
+import { PasswordInput } from "@/components/ui/password-input";
 
 export default function AdminSignInPage() {
   return (
-    <div className="flex min-h-screen items-center justify-center p-4">
+    <div className="flex min-h-screen items-center justify-center bg-muted/40 p-4">
       <Card className="w-full max-w-sm shadow-xl">
         <CardHeader className="space-y-1 text-center">
           <div className="flex justify-center items-center mb-4">
@@ -23,7 +24,7 @@ export default function AdminSignInPage() {
           </div>
           <div className="space-y-2">
             <Label htmlFor="password">Password</Label>
-            <Input id="password" type="password" />
+            <PasswordInput id="password" />
           </div>
         </CardContent>
         <CardFooter className="flex flex-col gap-4">
