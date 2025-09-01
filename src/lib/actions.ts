@@ -8,6 +8,11 @@ import { textToSpeech as textToSpeechFlow, TextToSpeechInput, TextToSpeechOutput
 import { rolePlayingScenario as rolePlayingScenarioFlow, RolePlayingScenarioInput, RolePlayingScenarioOutput } from "@/ai/flows/role-playing-scenario";
 import { livingStory as livingStoryFlow, LivingStoryInput, LivingStoryOutput } from "@/ai/flows/living-story-flow";
 import { ai } from "@/ai/genkit";
+import prisma from "./prisma";
+import { z } from 'zod';
+import bcrypt from 'bcrypt';
+import { createSession } from './auth';
+import { redirect } from 'next/navigation';
 
 // Define the structure of a single flashcard item as expected by the frontend after processing
 export interface ProcessedFlashcard {
@@ -111,4 +116,98 @@ export async function livingStoryAction(input: LivingStoryInput): Promise<Living
         console.error("Error in living story action:", error);
         throw new Error("Failed to get response from AI character. Please try again.");
     }
+}
+
+// --- AUTH ACTIONS ---
+
+const signUpSchema = z.object({
+    fullName: z.string().min(2, "Full name must be at least 2 characters."),
+    email: z.string().email("Invalid email address."),
+    password: z.string().min(6, "Password must be at least 6 characters."),
+    spokenLanguage: z.string(),
+    learningLanguage: z.string(),
+});
+
+export async function signUpAction(prevState: any, formData: FormData) {
+    const validatedFields = signUpSchema.safeParse(Object.fromEntries(formData.entries()));
+
+    if (!validatedFields.data) {
+        return {
+            message: "Invalid form data.",
+            errors: validatedFields.error.flatten().fieldErrors,
+        };
+    }
+
+    const { fullName, email, password, spokenLanguage, learningLanguage } = validatedFields.data;
+
+    try {
+        const existingUser = await prisma.user.findUnique({ where: { email } });
+        if (existingUser) {
+            return { message: "An account with this email already exists." };
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const newUser = await prisma.user.create({
+            data: {
+                name: fullName,
+                email,
+                password: hashedPassword,
+                spokenLanguage,
+                learningLanguage,
+            },
+        });
+
+        await createSession(newUser.id);
+        
+    } catch (error) {
+        console.error("Sign up error:", error);
+        return { message: "An unexpected error occurred. Please try again." };
+    }
+
+    redirect('/dashboard');
+}
+
+
+const signInSchema = z.object({
+  email: z.string().email("Invalid email address."),
+  password: z.string(),
+});
+
+
+export async function signInAction(prevState: any, formData: FormData) {
+    const validatedFields = signInSchema.safeParse(Object.fromEntries(formData.entries()));
+    
+    if (!validatedFields.data) {
+        return {
+            message: "Invalid form data.",
+            errors: validatedFields.error.flatten().fieldErrors,
+        };
+    }
+
+    const { email, password } = validatedFields.data;
+
+    try {
+        const user = await prisma.user.findUnique({ where: { email } });
+        if (!user) {
+            return { message: "Invalid email or password." };
+        }
+
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (!isPasswordValid) {
+            return { message: "Invalid email or password." };
+        }
+
+        await createSession(user.id);
+        
+    } catch (error) {
+        console.error("Sign in error:", error);
+        return { message: "An unexpected error occurred. Please try again." };
+    }
+
+    redirect('/dashboard');
+}
+
+export async function signOutAction() {
+    await deleteSession();
 }
