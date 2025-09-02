@@ -37,7 +37,8 @@ export async function createSession(userId: string) {
     const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 1 day from now
     const session = await encrypt({ userId, expiresAt });
 
-    cookies().set('session', session, {
+    const cookieStore = await cookies();
+    cookieStore.set('session', session, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         expires: expiresAt,
@@ -47,7 +48,8 @@ export async function createSession(userId: string) {
 }
 
 export async function getSession() {
-    const cookie = cookies().get('session')?.value;
+    const cookieStore = await cookies();
+    const cookie = cookieStore.get('session')?.value;
     const session = await decrypt(cookie);
     return session;
 }
@@ -59,8 +61,9 @@ export async function updateSession() {
     // Refresh the session so it expires 1 day from now
     const newExpiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
     const newSession = await encrypt({ userId: session.userId, expiresAt: newExpiresAt });
-
-    cookies().set('session', newSession, {
+    
+    const cookieStore = await cookies();
+    cookieStore.set('session', newSession, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         expires: newExpiresAt,
@@ -70,6 +73,7 @@ export async function updateSession() {
 }
 
 export async function deleteSession() {
-    cookies().delete('session');
+    const cookieStore = await cookies();
+    cookieStore.delete('session');
     redirect('/signin');
 }
