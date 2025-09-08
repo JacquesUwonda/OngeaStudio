@@ -4,17 +4,20 @@ import "./globals.css";
 import { Providers } from "@/components/providers";
 import { Toaster } from "@/components/ui/toaster";
 import { LanguageProvider } from "@/contexts/language-context";
+import { getUser } from "@/lib/data";
 
 export const metadata: Metadata = {
   title: "Ongea - Your AI Language Learning Companion",
   description: "Learn any language with interactive stories, flashcards, and an AI language partner.",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const user = await getUser();
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -25,10 +28,13 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased min-h-screen bg-background text-foreground">
         <Providers attribute="class" defaultTheme="system" enableSystem>
-          <LanguageProvider>
+          <LanguageProvider
+            initialSpokenLanguage={user?.spokenLanguage}
+            initialLearningLanguage={user?.learningLanguage}
+          >
             {children}
-            <Toaster />
           </LanguageProvider>
+          <Toaster />
         </Providers>
       </body>
     </html>

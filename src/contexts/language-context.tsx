@@ -30,29 +30,47 @@ export interface LanguageContextType {
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
-export const LanguageProvider = ({ children }: { children: ReactNode }) => {
-  const [spokenLanguage, setSpokenLanguageState] = useState<string>("en");
-  const [learningLanguage, setLearningLanguageState] = useState<string>("fr");
+export const LanguageProvider = ({ 
+    children,
+    initialSpokenLanguage,
+    initialLearningLanguage,
+}: { 
+    children: ReactNode,
+    initialSpokenLanguage?: string;
+    initialLearningLanguage?: string;
+}) => {
+  const [spokenLanguage, setSpokenLanguageState] = useState<string>(initialSpokenLanguage || "en");
+  const [learningLanguage, setLearningLanguageState] = useState<string>(initialLearningLanguage || "fr");
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    const storedSpokenLanguage = localStorage.getItem("spokenLanguage");
-    if (storedSpokenLanguage) {
-      setSpokenLanguageState(storedSpokenLanguage);
-    }
-    const storedLearningLanguage = localStorage.getItem("learningLanguage");
-    if (storedLearningLanguage) {
-      setLearningLanguageState(storedLearningLanguage);
-    }
+    setIsClient(true);
   }, []);
+
+  useEffect(() => {
+    if (!isClient) return;
+    
+    // Use initial props from server first, then check localStorage
+    const spokenToUse = initialSpokenLanguage || localStorage.getItem("spokenLanguage") || "en";
+    const learningToUse = initialLearningLanguage || localStorage.getItem("learningLanguage") || "fr";
+
+    setSpokenLanguageState(spokenToUse);
+    setLearningLanguageState(learningToUse);
+
+  }, [isClient, initialSpokenLanguage, initialLearningLanguage]);
 
   const setSpokenLanguage = (lang: string) => {
     setSpokenLanguageState(lang);
-    localStorage.setItem("spokenLanguage", lang);
+    if(isClient) {
+        localStorage.setItem("spokenLanguage", lang);
+    }
   };
 
   const setLearningLanguage = (lang: string) => {
     setLearningLanguageState(lang);
-    localStorage.setItem("learningLanguage", lang);
+    if(isClient) {
+        localStorage.setItem("learningLanguage", lang);
+    }
   };
 
   const getLanguageLabel = (value: string): string => {
