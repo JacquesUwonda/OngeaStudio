@@ -158,7 +158,7 @@ export async function signUpAction(prevState: any, formData: FormData) {
             },
         });
 
-        await createSession(newUser.id);
+        await createSession(newUser.id, false);
         
     } catch (error) {
         console.error("Sign up error:", error);
@@ -198,7 +198,7 @@ export async function signInAction(prevState: any, formData: FormData) {
             return { message: "Invalid email or password." };
         }
 
-        await createSession(user.id);
+        await createSession(user.id, false);
         
     } catch (error) {
         console.error("Sign in error:", error);
@@ -206,6 +206,39 @@ export async function signInAction(prevState: any, formData: FormData) {
     }
 
     redirect('/dashboard');
+}
+
+export async function adminSignInAction(prevState: any, formData: FormData) {
+    const validatedFields = signInSchema.safeParse(Object.fromEntries(formData.entries()));
+    
+    if (!validatedFields.data) {
+        return {
+            message: "Invalid form data.",
+            errors: validatedFields.error.flatten().fieldErrors,
+        };
+    }
+
+    const { email, password } = validatedFields.data;
+
+    try {
+        const admin = await prisma.admin.findUnique({ where: { email } });
+        if (!admin) {
+            return { message: "Invalid administrator credentials." };
+        }
+
+        const isPasswordValid = await bcrypt.compare(password, admin.password);
+        if (!isPasswordValid) {
+            return { message: "Invalid administrator credentials." };
+        }
+
+        await createSession(admin.id, true);
+        
+    } catch (error) {
+        console.error("Admin sign in error:", error);
+        return { message: "An unexpected error occurred. Please try again." };
+    }
+
+    redirect('/admin');
 }
 
 export async function signOutAction() {

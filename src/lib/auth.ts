@@ -10,6 +10,7 @@ const key = new TextEncoder().encode(secretKey);
 interface SessionPayload {
     userId: string;
     expiresAt: Date;
+    isAdmin?: boolean;
 }
 
 export async function encrypt(payload: SessionPayload) {
@@ -33,9 +34,9 @@ export async function decrypt(session: string | undefined = '') {
     }
 }
 
-export async function createSession(userId: string) {
+export async function createSession(userId: string, isAdmin = false) {
     const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 1 day from now
-    const session = await encrypt({ userId, expiresAt });
+    const session = await encrypt({ userId, expiresAt, isAdmin });
 
     const cookieStore = await cookies();
     cookieStore.set('session', session, {
@@ -60,7 +61,7 @@ export async function updateSession() {
 
     // Refresh the session so it expires 1 day from now
     const newExpiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
-    const newSession = await encrypt({ userId: session.userId, expiresAt: newExpiresAt });
+    const newSession = await encrypt({ userId: session.userId, expiresAt: newExpiresAt, isAdmin: session.isAdmin });
     
     const cookieStore = await cookies();
     cookieStore.set('session', newSession, {
