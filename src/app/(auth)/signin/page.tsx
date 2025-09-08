@@ -9,11 +9,10 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
-import { BookHeart, Loader2, LogOut, CheckCircle } from "lucide-react";
+import { BookHeart, Loader2 } from "lucide-react";
 import { PasswordInput } from "@/components/ui/password-input";
 import { useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -24,31 +23,23 @@ function SubmitButton() {
   );
 }
 
-function LogoutAlert() {
-  const searchParams = useSearchParams();
-  const loggedOut = searchParams.get('logged_out');
-
-  if (loggedOut) {
-    return (
-      <Alert variant="default" className="mb-6 bg-secondary border-primary/20">
-        <CheckCircle className="h-4 w-4 text-primary" />
-        <AlertTitle className="font-semibold text-primary">Logged Out</AlertTitle>
-        <AlertDescription>
-          You have been successfully signed out.
-        </AlertDescription>
-      </Alert>
-    );
-  }
-
-  return null;
-}
-
 export default function SignInPage() {
   const { toast } = useToast();
+  const searchParams = useSearchParams();
+
   const [state, formAction] = useFormState(signInAction, {
     message: "",
     errors: undefined
   });
+
+  useEffect(() => {
+    if (searchParams.get('logged_out')) {
+      toast({
+        title: "Signed Out",
+        description: "You have been successfully signed out.",
+      });
+    }
+  }, [searchParams, toast]);
 
   useEffect(() => {
     if (state?.message) {
@@ -62,7 +53,6 @@ export default function SignInPage() {
 
   return (
     <Card className="w-full max-w-sm shadow-xl">
-      <LogoutAlert />
       <form action={formAction}>
         <CardHeader className="space-y-1 text-center">
           <div className="flex justify-center items-center mb-4">
