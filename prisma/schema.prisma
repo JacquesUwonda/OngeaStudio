@@ -14,9 +14,9 @@ datasource db {
 }
 
 model User {
-  id               String   @id @default(cuid())
-  name             String?
-  email            String   @unique
+  id               String @id @default(cuid())
+  email            String @unique
+  name             String
   password         String
   spokenLanguage   String
   learningLanguage String
@@ -25,8 +25,8 @@ model User {
 }
 
 model Admin {
-  id        String   @id @default(cuid())
-  email     String   @unique
+  id        String @id @default(cuid())
+  email     String @unique
   password  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
