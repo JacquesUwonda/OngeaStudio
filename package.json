@@ -11,7 +11,7 @@
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
     "postinstall": "prisma generate",
-    "setup-db": "echo '🚀 Starting database setup...' && prisma migrate dev --name init && echo '✔ Database migration complete.' && tsx prisma/seed.ts && echo '🌱 Database successfully seeded.' && echo '✅ Setup complete!'",
+    "setup-db": "prisma generate && echo '🚀 Starting database setup...' && prisma migrate dev --name init && echo '✔ Database migration complete.' && tsx prisma/seed.ts && echo '🌱 Database successfully seeded.' && echo '✅ Setup complete!'",
     "prisma:studio": "prisma studio"
   },
   "prisma": {
