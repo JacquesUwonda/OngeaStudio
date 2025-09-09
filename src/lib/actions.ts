@@ -1,7 +1,7 @@
 
 "use server";
 
-import { generateStory as generateStoryFlow, GenerateStoryInput, GenerateStoryOutput } from "@/ai/flows/generate-story";
+import { generateStory as generateStoryFlow, GenerateStoryInput } from "@/ai/flows/generate-story";
 import { aiLanguagePartner as aiLanguagePartnerFlow, AiLanguagePartnerInput, AiLanguagePartnerOutput } from "@/ai/flows/ai-language-partner";
 import { generateFlashcards as generateFlashcardsFlow, GenerateFlashcardsInput } from "@/ai/flows/generate-flashcard-flow";
 import { textToSpeech as textToSpeechFlow, TextToSpeechInput, TextToSpeechOutput } from "@/ai/flows/text-to-speech";
@@ -24,7 +24,7 @@ export interface ProcessedFlashcard {
 export type GenerateFlashcardsActionOutput = ProcessedFlashcard[];
 
 
-export async function generateStoryAction(input: GenerateStoryInput): Promise<GenerateStoryOutput> {
+export async function generateStoryAction(input: GenerateStoryInput) {
   try {
     const storyData = await generateStoryFlow(input);
     if (!storyData || !storyData.story || !storyData.title) {
@@ -112,7 +112,7 @@ export async function livingStoryAction(input: LivingStoryInput): Promise<Living
     try {
         const response = await livingStoryFlow(input);
         return response;
-    } catch (error) {
+    } catch (error)
         console.error("Error in living story action:", error);
         throw new Error("Failed to get response from AI character. Please try again.");
     }
@@ -241,7 +241,15 @@ export async function adminSignInAction(prevState: any, formData: FormData) {
     redirect('/admin');
 }
 
-export async function signOutAction() {
+const signOutSchema = z.object({
+    redirectTo: z.string().optional(),
+});
+
+export async function signOutAction(formData: FormData) {
     await deleteSession();
-    redirect('/signin?logged_out=true');
+    
+    const validatedFields = signOutSchema.safeParse(Object.fromEntries(formData.entries()));
+    const redirectTo = validatedFields.data?.redirectTo || '/signin?logged_out=true';
+    
+    redirect(redirectTo);
 }

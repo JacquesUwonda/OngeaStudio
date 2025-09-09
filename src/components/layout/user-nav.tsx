@@ -50,6 +50,7 @@ export async function UserNav() {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <form action={signOutAction}>
+            <input type="hidden" name="redirectTo" value="/signin?logged_out=true" />
             <button type="submit" className="w-full">
                 <DropdownMenuItem className="cursor-pointer">
                     <LogOut className="mr-2 h-4 w-4" />

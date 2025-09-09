@@ -2,7 +2,6 @@
 import 'server-only';
 import { SignJWT, jwtVerify } from 'jose';
 import { cookies } from 'next/headers';
-import { redirect } from 'next/navigation';
 
 const secretKey = process.env.JWT_SECRET;
 const key = new TextEncoder().encode(secretKey);
@@ -76,5 +75,4 @@ export async function updateSession() {
 export async function deleteSession() {
     const cookieStore = await cookies();
     cookieStore.delete('session');
-    redirect('/signin');
 }
