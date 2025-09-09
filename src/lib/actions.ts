@@ -112,7 +112,7 @@ export async function livingStoryAction(input: LivingStoryInput): Promise<Living
     try {
         const response = await livingStoryFlow(input);
         return response;
-    } catch (error)
+    } catch (error) {
         console.error("Error in living story action:", error);
         throw new Error("Failed to get response from AI character. Please try again.");
     }
