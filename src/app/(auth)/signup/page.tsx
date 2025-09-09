@@ -1,7 +1,8 @@
 
 "use client";
 
-import { useFormState, useFormStatus } from 'react-dom';
+import { useActionState } from 'react';
+import { useFormStatus } from 'react-dom';
 import { signUpAction } from '@/lib/actions';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -29,7 +30,7 @@ export default function SignUpPage() {
   const [learningLanguage, setLearningLanguage] = useState("fr");
   const { toast } = useToast();
 
-  const [state, formAction] = useFormState(signUpAction, {
+  const [state, formAction] = useActionState(signUpAction, {
     message: "",
     errors: undefined
   });

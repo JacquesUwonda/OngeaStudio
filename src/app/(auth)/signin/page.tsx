@@ -1,7 +1,8 @@
 
 "use client";
 
-import { useFormState, useFormStatus } from 'react-dom';
+import { useActionState, useEffect } from 'react';
+import { useFormStatus } from 'react-dom';
 import { useSearchParams } from 'next/navigation';
 import { signInAction } from '@/lib/actions';
 import { Button } from "@/components/ui/button";
@@ -11,7 +12,6 @@ import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { BookHeart, Loader2 } from "lucide-react";
 import { PasswordInput } from "@/components/ui/password-input";
-import { useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 
 function SubmitButton() {
@@ -27,17 +27,20 @@ export default function SignInPage() {
   const { toast } = useToast();
   const searchParams = useSearchParams();
 
-  const [state, formAction] = useFormState(signInAction, {
+  const [state, formAction] = useActionState(signInAction, {
     message: "",
     errors: undefined
   });
 
   useEffect(() => {
-    if (searchParams.get('logged_out')) {
+    const loggedOut = searchParams.get('logged_out');
+    if (loggedOut) {
       toast({
         title: "Signed Out",
         description: "You have been successfully signed out.",
       });
+      // Optional: remove the query param from URL without reloading
+      window.history.replaceState(null, '', '/signin');
     }
   }, [searchParams, toast]);
 
